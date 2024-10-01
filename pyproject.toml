@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools~=72.1.0", "setuptools-scm~=7.1.0", "wheel~=0.44.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "" # TODO: put a name to the project
+version = "" # TODO: put a version to the project
+dynamic = ["readme"]
+authors = [
+    { name = "©2024 Pablo", email = "" }, # TODO: put your name and email
+]
+description = "" # TODO: put a description to the project
+requires-python = ">=3.11"
+keywords = ["python", "library"] # TODO: put some keywords to the project
+classifiers = ["Programming Language :: Python :: 3.11"]
+dependencies = [ # TODO: put the dependencies of the project
+
+]
+
+[tool.setuptools.dynamic]
+readme = { file = ["README.md"], content-type = "text/markdown" }
+
+[project.optional-dependencies]
+tests = [
+    "time-machine==2.15.0",
+    "coverage==7.6.1"
+]
+extended = [
+    "time-machine==2.14.1"
+]
+
+[tool.setuptools.packages.find]
+where = [] # TODO: put the path of the source code
+include = [] # TODO: put the name of the package
