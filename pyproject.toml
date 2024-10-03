@@ -1,24 +1,42 @@
+# Build, define las herremientas necesarias para gestionar,
+# usamos setuptools para la construccion y el empaquetado del proyecto.
+
 [build-system]
 requires = ["setuptools~=72.1.0", "setuptools-scm~=7.1.0", "wheel~=0.44.0"]
 build-backend = "setuptools.build_meta"
 
+# project define todas las caracteristicas del proyecto
+
 [project]
-name = "" # TODO: put a name to the project
-version = "" # TODO: put a version to the project
+name = "body_analyzer_api"
+version = "0.10"
 dynamic = ["readme"]
 authors = [
-    { name = "©2024 Pablo", email = "" }, # TODO: put your name and email
+    { name = "©2024 Pablo Techera", email = "ptecherasosa@icloud.com" },
 ]
-description = "" # TODO: put a description to the project
+description = "Development of a REST API for body composition analysis."
 requires-python = ">=3.11"
-keywords = ["python", "library"] # TODO: put some keywords to the project
-classifiers = ["Programming Language :: Python :: 3.11"]
-dependencies = [ # TODO: put the dependencies of the project
+keywords = ["body composition", "health", "calculator", "REST API", "Python", "body analysis"]
+classifiers = [
+    "Programming Language :: Python :: 3.11",
+    "Intended Audience :: Healthcare Industry",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License"
+]
+
+dependencies = [
+    "flask>=2.0",
+    "requests>=2.26",
 
 ]
 
+
+# tool define de donde se va a obtener la descripción del proyecto en este caso del fichero README.md
 [tool.setuptools.dynamic]
 readme = { file = ["README.md"], content-type = "text/markdown" }
+
+# project.optional son dependencias opcionales y utilidades adicionales.
 
 [project.optional-dependencies]
 tests = [
@@ -29,6 +47,8 @@ extended = [
     "time-machine==2.14.1"
 ]
 
+# tool.setuptools define donde están los archivos de código fuente y necesario para que setuptools sepa qué paquetes debe incluir.
+
 [tool.setuptools.packages.find]
-where = [] # TODO: put the path of the source code
-include = [] # TODO: put the name of the package
+where = ["src"]
+include = ["body_analyzer_api"]
