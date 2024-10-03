@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 # project define todas las caracteristicas del proyecto
 
 [project]
-name = "body_analyzer_api"
+name = "body_analyzer"
 version = "0.10"
 dynamic = ["readme"]
 authors = [
@@ -51,4 +51,4 @@ extended = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["body_analyzer_api"]
+include = ["body_analyzer"]

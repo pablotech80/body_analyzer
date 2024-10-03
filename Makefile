@@ -4,6 +4,7 @@ VENV_ACTIVATE=$(VENV_NAME)/bin/activate
 PYTHON_PATH=$(shell which python3.12)
 
 # export permite que todos los archivos ejecutables estén disponibles.
+PROJECT_NAME = body_analyzer
 
 create-venv: delete-venv
 	$(PYTHON_PATH) -m venv $(VENV_NAME)
@@ -30,8 +31,8 @@ clean :
 reinstall-dependencies: update-pip delete-dependencies install-dep clean
 
 update-pip:
-	$(VENV_NAME)/bin/pip install --upgrade pip
-	# TODO: Update pip
+		./${VENV_NAME}/bin/pip install --upgrade pip
+
 
 delete-dependencies:
 	$(VENV_NAME)/bin/pip freeze | xargs $(VENV_NAME)/bin/pip uninstall -y
@@ -48,5 +49,6 @@ install-dep:
 
 test: ## Run tests
 	$(VENV_NAME)/bin/python -m unittest discover -s tests
+
 	#  TODO: how to run unittests
 
