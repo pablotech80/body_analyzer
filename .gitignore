@@ -5,13 +5,11 @@ __pycache__/
 *.pyc
 *.pyo
 
-# Archivos de distribución
 dist/
 build/
 *.egg
 *.whl
 
-# Archivos de configuración de IDEs
 .idea/
 .vscode/
 
