@@ -3,6 +3,7 @@ VENV_NAME?=venv
 VENV_ACTIVATE=$(VENV_NAME)/bin/activate
 PYTHON_PATH=$(shell which python3.12)
 
+
 # export permite que todos los archivos ejecutables estén disponibles.
 PROJECT_NAME = body_analyzer
 
