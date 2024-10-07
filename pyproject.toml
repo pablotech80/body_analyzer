@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "body_analyzer"
-version = "0.10"
+version = "0.1.0"
 dynamic = ["readme"]
 authors = [
     { name = "©2024 Pablo Techera", email = "ptecherasosa@icloud.com" },
@@ -26,8 +26,8 @@ classifiers = [
 ]
 
 dependencies = [
-    "flask>=2.0",
-    "requests>=2.26",
+    "flask~=2.0",
+    "requests~=2.26",
 
 ]
 
