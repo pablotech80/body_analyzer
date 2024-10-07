@@ -3,8 +3,6 @@ VENV_NAME?=venv
 VENV_ACTIVATE=$(VENV_NAME)/bin/activate
 PYTHON_PATH=$(shell which python3.12)
 
-
-# export permite que todos los archivos ejecutables estén disponibles.
 PROJECT_NAME = body_analyzer
 
 create-venv: delete-venv
@@ -18,6 +16,7 @@ delete-venv:
 uninstall:
 	pip uninstall -y $(PROJECT_NAME)
 
+
 build: update-pip
 	$(PYTHON_PATH) setup.py sdist bdist_wheel
 
@@ -27,6 +26,7 @@ clean :
 	find . -type d -name "__pycache__" -exec rm -r {} +
 	find . -type f -name "*.pyc" -delete
 
+
 reinstall-dependencies: update-pip delete-dependencies install-dep clean
 
 update-pip:
@@ -35,6 +35,11 @@ update-pip:
 
 delete-dependencies:
 	$(VENV_NAME)/bin/pip freeze | xargs $(VENV_NAME)/bin/pip uninstall -y
+
+
+docker:
+	$(VENV_NAME)/bin/pip install docker
+
 
 
 docker:
