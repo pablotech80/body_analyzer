@@ -24,11 +24,20 @@ classifiers = [
 ]
 
 dependencies = [
-    "flask~=2.3.3",
-    "requests~=2.32.3",
-    "pip~=24.2"
-]
+    "blinker~=1.8.2",
+    "click~=8.1.7",
+    "Flask~=3.0.3",
+    "iniconfig~=2.0.0",
+    "itsdangerous~=2.2.0",
+    "Jinja2~=3.1.4",
+    "MarkupSafe~=3.0.1",
+    "packaging~=24.1",
+    "pluggy~=1.5.0",
+    "pytest~=8.3.3",
+    "typing_extensions~=4.12.2",
+    "Werkzeug~=3.0.4"
 
+]
 
 # tool define de donde se va a obtener la descripción del proyecto en este caso del fichero README.md
 [tool.setuptools.dynamic]
@@ -50,3 +59,6 @@ extended = [
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["body_analyzer"]
+
+[tool.pytest.ini.options]
+addopts = "-v"
