@@ -24,9 +24,9 @@ classifiers = [
 ]
 
 dependencies = [
-    "flask~=2.0",
-    "requests~=2.26",
-
+    "flask~=2.3.3",
+    "requests~=2.32.3",
+    "pip~=24.2"
 ]
 
 

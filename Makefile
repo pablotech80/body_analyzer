@@ -41,12 +41,6 @@ docker:
 	$(VENV_NAME)/bin/pip install docker
 
 
-
-docker:
-	$(VENV_NAME)/bin/pip install docker
-
-
-
 install-dep:
 	$(VENV_NAME)/bin/pip install -e .
 
