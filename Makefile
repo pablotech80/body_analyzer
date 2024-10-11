@@ -1,5 +1,4 @@
-export PATH := /app/.local/bin:$(PATH)
-VENV_NAME?=venv
+export PATH := /app/.local/bin:$(PATH=venv)
 VENV_ACTIVATE=$(VENV_NAME)/bin/activate
 PYTHON_PATH=$(shell which python3.12)
 
