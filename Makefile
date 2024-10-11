@@ -44,6 +44,9 @@ docker:
 install-dep:
 	$(VENV_NAME)/bin/pip install -e .
 
+run:
+	FLASK_APP=src/body_analyzer/main.py $(VENV_NAME)/bin/python -m flask run
+
 
 test: ## Run tests
 	$(VENV_NAME)/bin/python -m unittest discover -s tests
