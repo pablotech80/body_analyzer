@@ -30,4 +30,5 @@ coverage.xml
 # Archivos de test
 tests/.pytest_cache/
 
+# Archivos macOS
 .DS_Store/
