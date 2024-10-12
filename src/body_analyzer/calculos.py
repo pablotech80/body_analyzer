@@ -89,3 +89,25 @@ def calcular_imc(
     imc = peso / (altura_m ** 2)
     return round(imc, 2)
 
+def calcular_agua_total(
+        peso: Union[int, float],
+        altura: Union[float],
+        edad: Union[int],
+        genero: Literal['h', 'm']
+) -> float:
+    """Calcula el agua total del cuerpo usando una fórmula simplifacada.
+
+        Args:
+             peso: Peso en kg.(float)
+             altura: Altura en cm.(float)
+             edad: Edad del usuario en años
+             genero: (Literal) 'h' para hombre y 'm' para mujer.
+        Returns: float: Agua total del cuerpo.
+        """
+    if genero == 'h':
+        agua_total = 2.447 - (0.09156 * edad) + (0.1074 * altura) + (0.3362 * peso)
+    elif genero == 'm':
+        agua_total = -2.097 + (0.1069 * altura) + (0.2466 * peso)
+    else:
+        raise ValueError("El valor de 'genero' debe ser 'h' o 'm'.")
+    return round(agua_total, 2)
