@@ -1,5 +1,6 @@
 import flask, math
 from typing import Literal, Union
+
 app = flask.Flask(__name__)
 
 
@@ -35,3 +36,37 @@ def calcular_porcentaje_grasa(
     else:
         raise ValueError("El valor de 'genero' debe ser 'h' o 'm'.")
     return round(porcentaje_grasa, 2)
+
+
+def calcular_tmb(
+        peso: Union[int, float],
+        altura: Union[int, float],
+        edad: Union[int],
+        genero: Literal['h', 'm']) -> float:
+    """Calcula la tasa Métabolica Basal(TMB) usando la fórmula de Harris-Benedict.
+
+    Args:
+        peso: Peso en kg.(float)
+        altura: Altura en cm.(float, int)
+        edad: Edad del usuario en años (int)
+        genero: (Literal) 'h' para hombre y 'm' para mujer.
+
+    Returns: float: TMB calculada.
+        """
+    # Validaciones de entrada
+
+    if peso <= 0:
+        raise ValueError("El peso debe ser un valor positivo.")
+    if altura <= 0:
+        raise ValueError("La altura debe ser un valor positivo.")
+    if  edad <= 0:
+        raise ValueError("La edad debe ser un valor positivo.")
+
+    if genero == 'h':
+        tmb = 88.362 + (13.397 * peso) + (4.799 * altura) - (5.677 * edad)
+    elif genero == 'm':
+        tmb = 447.593 + (9.247 * peso) + (3.098 * altura) - (4.330 * edad)
+    else:
+        raise ValueError("El valor de 'genero' debe ser 'h' o 'm'.")
+    return round(tmb, 2)
+
