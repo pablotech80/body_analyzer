@@ -43,7 +43,7 @@ def calcular_tmb(
         altura: Union[int, float],
         edad: Union[int],
         genero: Literal['h', 'm']) -> float:
-    """Calcula la tasa Métabolica Basal(TMB) usando la fórmula de Harris-Benedict.
+    """Calcula la tasa Metabólica Basal(TMB) usando la fórmula de Harris-Benedict.
 
     Args:
         peso: Peso en kg.(float)
@@ -59,7 +59,7 @@ def calcular_tmb(
         raise ValueError("El peso debe ser un valor positivo.")
     if altura <= 0:
         raise ValueError("La altura debe ser un valor positivo.")
-    if  edad <= 0:
+    if edad <= 0:
         raise ValueError("La edad debe ser un valor positivo.")
 
     if genero == 'h':
@@ -69,4 +69,23 @@ def calcular_tmb(
     else:
         raise ValueError("El valor de 'genero' debe ser 'h' o 'm'.")
     return round(tmb, 2)
+
+def calcular_imc(
+        peso: Union[int, float],
+        altura: Union[int, float]) -> float:
+
+    """Calcula el Índice de Masa Corporal (IMC).
+    Args:
+        peso: Peso en kg.(float) Peso del usuario en kg.
+        altura: Altura en cm.(float, int) Altura del usuario en cm.
+    Returns: float: IMC calculada.
+    """
+    # Validaciones de entrada
+    if peso <= 0:
+        raise ValueError("El peso debe ser un valor positivo.")
+    if altura <= 0:
+        raise ValueError("La altura debe ser un valor positivo.")
+    altura_m = altura / 100     # Esta variable convierte la altura de metros a cm.
+    imc = peso / (altura_m ** 2)
+    return round(imc, 2)
 
