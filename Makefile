@@ -66,9 +66,10 @@ install-coverage:
 
 # Run tests with coverage
 coverage: install-coverage
-	$(VENV_NAME)/bin/coverage run -m unittest discover -s tests
+	$(VENV_NAME)/bin/coverage run --source=src/body_analyzer -m unittest discover -s tests -p "test_*.py"
 	$(VENV_NAME)/bin/coverage report
 	$(VENV_NAME)/bin/coverage html
+
 
 # Clean coverage files
 clean-coverage:
