@@ -27,7 +27,7 @@ def calcular_grasa_endpoint():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
-    resultado_formateado = f'{resultado:.2f}'
+    resultado_formateado = f'{resultado:.2f}' # TODO: este codigo nunca se alcanza tiene todo return antes
     return jsonify({"resultado": resultado_formateado})
 
 @app.route('/calcular_tmb', methods=['POST'])
@@ -47,7 +47,7 @@ def calcular_tmb_endpoint():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
-    resultado_formateado = f'{resultado:.2f}'
+    resultado_formateado = f'{resultado:.2f}' # TODO: este codigo nunca se alcanza tiene todo return antes
     return jsonify({"resultado": resultado_formateado})
 
 @app.route('/calcular_imc', methods=['POST'])
@@ -83,7 +83,7 @@ def calcular_agua_total_endpoint():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
-    resultado_formateado = f'{resultado:.2f}'
+    resultado_formateado = f'{resultado:.2f}' # TODO: este codigo nunca se alcanza tiene todo return antes
     return jsonify({"agua_total": resultado_formateado})
 
 
