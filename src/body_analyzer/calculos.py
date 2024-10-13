@@ -1,7 +1,9 @@
 import flask, math
 from typing import Literal, Union
 
-app = flask.Flask(__name__)
+from .constantes import PROTEIN_DIVISOR, CARB_DIVISOR, FAT_DIVISOR
+
+app = flask.Flask(__name__)  # TODO: Revisar si es necesario
 
 
 # Funciones Lógicas
@@ -325,18 +327,18 @@ def calcular_macronutrientes(
     proteinas = carbohidratos = grasas = 0.0
 
     # Asignación de macronutrientes según el objetivo
-    if objetivo == 'mantener':
-        proteinas = (calorias * 0.30) / 4
-        carbohidratos = (calorias * 0.40) / 4
-        grasas = (calorias * 0.30) / 9
-    elif objetivo == 'perder':
-        proteinas = (calorias * 0.40) / 4
-        carbohidratos = (calorias * 0.40) / 4
-        grasas = (calorias * 0.20) / 9
-    elif objetivo == 'ganar':
-        proteinas = (calorias * 0.30) / 4
-        carbohidratos = (calorias * 0.50) / 4
-        grasas = (calorias * 0.20) / 9
+    if objetivo == 'mantener peso':
+        proteinas = (calorias * 0.30) / PROTEIN_DIVISOR
+        carbohidratos = (calorias * 0.40) / CARB_DIVISOR
+        grasas = (calorias * 0.30) / FAT_DIVISOR
+    elif objetivo == 'perder grasa':
+        proteinas = (calorias * 0.40) / PROTEIN_DIVISOR
+        carbohidratos = (calorias * 0.40) / CARB_DIVISOR
+        grasas = (calorias * 0.20) / FAT_DIVISOR
+    elif objetivo == 'ganar masa muscular':
+        proteinas = (calorias * 0.30) / PROTEIN_DIVISOR
+        carbohidratos = (calorias * 0.50) / CARB_DIVISOR
+        grasas = (calorias * 0.20) / FAT_DIVISOR
 
-    # Retorno consistente de una tupla de floats
     return float(proteinas), float(carbohidratos), float(grasas)
+
