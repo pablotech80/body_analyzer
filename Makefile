@@ -59,3 +59,17 @@ run:
 # Run tests
 test: ## Run tests
 	$(VENV_NAME)/bin/python -m unittest discover -s tests
+
+# Install coverage
+install-coverage:
+	$(VENV_NAME)/bin/pip install coverage
+
+# Run tests with coverage
+coverage: install-coverage
+	$(VENV_NAME)/bin/coverage run -m unittest discover -s tests
+	$(VENV_NAME)/bin/coverage report
+	$(VENV_NAME)/bin/coverage html
+
+# Clean coverage files
+clean-coverage:
+	rm -rf .coverage htmlcov
