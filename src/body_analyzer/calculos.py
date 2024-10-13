@@ -88,7 +88,19 @@ def calcular_imc(
     imc = peso / (altura_m ** 2)
     return round(imc, 2)
 
-
+# TODO: en lugar de usar literales, se puede usar un Enum por ejemplo:
+# Literal['h', 'm']
+# from enum import Enum
+#
+# class Sexo(Enum):
+#     HOMBRE = 'h'
+#     MUJER = 'm'
+# def calcular_agua_total(
+#         peso: Union[int, float],
+#         altura: float,
+#         edad: int,
+#         genero: Sexo
+# ) -> float:
 def calcular_agua_total(
         peso: Union[int, float],
         altura: float,
@@ -142,7 +154,7 @@ def calcular_peso_saludable(altura: float) -> tuple:
 
 
 def calcular_sobrepeso(
-        peso: Union[int, float],
+        peso: Union[int, float], # TODO: No es necesario que sea un int
         altura: float) -> float:
     """
     Calcula el sobrepeso comparando el peso actual con el peso máximo saludable.
@@ -165,8 +177,8 @@ def calcular_sobrepeso(
 
 
 def calcular_masa_muscular(
-        peso: Union[int, float],
-        porcentaje_grasa: Union[int, float]
+        peso: Union[int, float], # TODO: No es necesario que sea un int
+        porcentaje_grasa: Union[int, float] # TODO: No es necesario que sea un int
 ) -> float:
     """
     Calcula la masa muscular (masa magra) del cuerpo descontando el porcentaje de grasa corporal.
@@ -188,8 +200,8 @@ def calcular_masa_muscular(
     return round(masa_muscular, 2)
 
 def calcular_ffmi(
-        masa_muscular: Union[int, float],
-        altura: Union[int, float]
+        masa_muscular: Union[int, float], # TODO: No es necesario que sea un int
+        altura: Union[int, float] # TODO: No es necesario que sea un int
 ) -> float:
     """
     Calcula el Índice de Masa Libre de Grasa (FFMI).
@@ -213,8 +225,8 @@ def calcular_ffmi(
     return round(ffmi, 2)
 
 def calcular_rcc(
-        cintura: Union[int, float],
-        cadera: Union[float, None],
+        cintura: Union[int, float], # TODO: No es necesario que sea un int
+        cadera: Union[float, None], # TODO: Esto es un valor Optional[float]
 ) -> float:
     """
     Calcula la relación cintura-cadera, un indicador de la,
@@ -290,6 +302,7 @@ def calcular_calorias_diarias(
     if objetivo not in ['mantener peso', 'perder grasa', 'ganar masa muscular']:
         raise ValueError("El valor de 'objetivo' debe ser 'mantener peso', 'perder grasa' o 'ganar masa muscular'.")
 
+    # TODO: convertir a constantes los factores de actividad
     if objetivo == 'mantener peso':
         return tmb * 1.2  # Factor de actividad moderado
     elif objetivo == 'perder grasa':
