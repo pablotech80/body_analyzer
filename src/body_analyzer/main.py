@@ -1,15 +1,11 @@
 from flask import Flask, request, jsonify
 
 from calculos import (calcular_porcentaje_grasa, calcular_tmb, calcular_imc, calcular_agua_total,
-                      calcular_peso_saludable, calcular_sobrepeso, calcular_rcc, calcular_ffmi,
-                      calcular_macronutrientes, calcular_masa_muscular, calcular_calorias_diarias,
-                      calcular_ratio_cintura_altura)
-
-from interpretaciones import (interpretar_imc, interpretar_porcentaje_grasa, interpretar_ffmi,
-                              interpretar_rcc, interpretar_ratio_cintura_altura)
+                      calcular_peso_saludable, calcular_sobrepeso, calcular_rcc)
 
 app = Flask(__name__)
 print(app.url_map)
+
 
 @app.route('/')
 def home():
@@ -72,7 +68,6 @@ def calcular_grasa_endpoint():
         return jsonify({"error": str(e)}), 400
 
 
-
 @app.route('/calcular_tmb', methods=['POST'])
 def calcular_tmb_endpoint():
     data = request.get_json()
@@ -107,6 +102,7 @@ def calcular_imc_endpoint():
 
     return jsonify({"imc": resultado})
 
+
 @app.route('/calcular_agua_total', methods=['POST'])
 def calcular_agua_total_endpoint():
     data = request.get_json()
@@ -123,7 +119,6 @@ def calcular_agua_total_endpoint():
         return jsonify({"agua_total": resultado})
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-
 
 
 @app.route('/calcular_peso_saludable', methods=['POST'])
