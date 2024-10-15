@@ -3,8 +3,8 @@ from typing import Literal, Union
 
 app = flask.Flask(__name__)
 
-
 # Funciones Lógicas
+
 def calcular_porcentaje_grasa(
     cintura: Union[int, float],
     cadera: None,
