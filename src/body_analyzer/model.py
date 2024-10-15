@@ -1,8 +1,12 @@
 from enum import Enum
 
+
 class Sexo(Enum):
     HOMBRE = 'h'
     MUJER = 'm'
+
+    def __str__(self):
+        return self.value
 
 
 class ObjetivoNutricional(Enum):
