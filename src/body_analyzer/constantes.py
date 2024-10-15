@@ -8,7 +8,6 @@ GRASA_BAJA_HOMBRES = 6
 GRASA_ALTA_MUJERES = 32
 GRASA_BAJA_MUJERES = 16
 
-
 # Constantes para los umbrales de relación cintura-cadera
 RCC_ALTO_HOMBRES = 0.95
 RCC_MODERADO_HOMBRES = 0.90
