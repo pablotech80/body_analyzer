@@ -1,7 +1,7 @@
 import unittest
 
-from src.body_analyzer.model import ObjetivoNutricional
 from src.body_analyzer.calculos import calcular_macronutrientes
+from src.body_analyzer.model import ObjetivoNutricional
 
 
 class TestCalcularMacronutrientes(unittest.TestCase):
@@ -30,6 +30,7 @@ class TestCalcularMacronutrientes(unittest.TestCase):
     def test_objetivo_invalido(self):
         with self.assertRaises(ValueError):
             calcular_macronutrientes(2000, 'perder peso rapido')
+
 
 if __name__ == '__main__':
     unittest.main()
