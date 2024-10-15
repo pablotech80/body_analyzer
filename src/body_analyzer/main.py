@@ -71,6 +71,8 @@ def calcular_grasa_endpoint():
         # Capturar errores de valor y devolver un mensaje de error
         return jsonify({"error": str(e)}), 400
 
+
+
 @app.route('/calcular_tmb', methods=['POST'])
 def calcular_tmb_endpoint():
     data = request.get_json()
@@ -88,8 +90,6 @@ def calcular_tmb_endpoint():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
-    resultado_formateado = f'{resultado:.2f}'
-    return jsonify({"resultado": resultado_formateado})
 
 @app.route('/calcular_imc', methods=['POST'])
 def calcular_imc_endpoint():
@@ -124,8 +124,7 @@ def calcular_agua_total_endpoint():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
-    resultado_formateado = f'{resultado:.2f}'
-    return jsonify({"agua_total": resultado_formateado}), 200
+
 
 @app.route('/calcular_peso_saludable', methods=['POST'])
 def calcular_peso_saludable_endpoint():
@@ -210,10 +209,6 @@ def calcular_rcc_endpoint():
     except ValueError as e:
         # Capturar errores de valor y devolver un mensaje de error
         return jsonify({"error": str(e)}), 400
-
-
-
-
 
 
 if __name__ == '__main__':

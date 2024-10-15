@@ -32,3 +32,4 @@ tests/.pytest_cache/
 
 # Archivos macOS
 .DS_Store/
+/.coverage
