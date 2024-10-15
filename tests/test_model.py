@@ -37,5 +37,6 @@ class TestEnums(unittest.TestCase):
         with self.assertRaises(ValueError):
             ObjetivoNutricional('bajar peso')
 
+
 if __name__ == '__main__':
     unittest.main()
