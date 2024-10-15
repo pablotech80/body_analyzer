@@ -1,6 +1,4 @@
-from .constantes import GRASA_ALTA_HOMBRES, GRASA_BAJA_HOMBRES, GRASA_ALTA_MUJERES, GRASA_BAJA_MUJERES, \
-    FFMI_UMBRAL_HOMBRES, RCC_MODERADO_HOMBRES, RCC_ALTO_HOMBRES, RATIO_ALTO_RIESGO, RATIO_MODERADO_RIESGO, \
-    RCC_ALTO_MUJERES, RCC_MODERADO_MUJERES, FFMI_UMBRAL_MUJERES
+from .constantes import *
 from .model import Sexo
 
 
@@ -20,7 +18,7 @@ def interpretar_imc(imc: float, ffmi: float, genero: Sexo) -> str:
         ValueError: Si el valor de 'genero' no es Sexo.HOMBRE o Sexo.MUJER.
     """
     # Validación del género
-    if not isinstance(genero, Sexo): # TODO: esto ya no es necesario porque se importa el Enum Sexo
+    if not isinstance(genero, Sexo):  # TODO: esto ya no es necesario porque se importa el Enum Sexo
         raise ValueError("El valor de 'genero' debe ser Sexo.HOMBRE o Sexo.MUJER.")
 
     # Interpretación basada en IMC y FFMI
@@ -35,6 +33,7 @@ def interpretar_imc(imc: float, ffmi: float, genero: Sexo) -> str:
         return "El IMC es bajo, se recomienda consultar con un profesional de salud."
     else:
         return "El IMC está dentro del rango normal."
+
 
 def interpretar_porcentaje_grasa(porcentaje_grasa: float, genero: Sexo) -> str:
     """
@@ -53,7 +52,7 @@ def interpretar_porcentaje_grasa(porcentaje_grasa: float, genero: Sexo) -> str:
         ValueError: Si el valor de 'genero' no es Sexo.HOMBRE o Sexo.MUJER.
     """
     # Validación del género
-    if not isinstance(genero, Sexo): # TODO: esto ya no es necesario porque se importa el Enum Sexo
+    if not isinstance(genero, Sexo):  # TODO: esto ya no es necesario porque se importa el Enum Sexo
         raise ValueError("El valor de 'genero' debe ser Sexo.HOMBRE o Sexo.MUJER.")
 
     # Interpretación del porcentaje de grasa
@@ -72,6 +71,7 @@ def interpretar_porcentaje_grasa(porcentaje_grasa: float, genero: Sexo) -> str:
         else:
             return "Normal"
 
+
 def interpretar_ffmi(ffmi: float, genero: Sexo) -> str:
     """
     Proporciona una interpretación del FFMI basado en rangos preestablecidos que varían según el género.
@@ -87,7 +87,7 @@ def interpretar_ffmi(ffmi: float, genero: Sexo) -> str:
         ValueError: Si el valor de 'genero' no es Sexo.HOMBRE o Sexo.MUJER.
     """
     # Validación del género
-    if not isinstance(genero, Sexo): # TODO: esto ya no es necesario porque se importa el Enum Sexo
+    if not isinstance(genero, Sexo):  # TODO: esto ya no es necesario porque se importa el Enum Sexo
         raise ValueError("El valor de 'genero' debe ser Sexo.HOMBRE o Sexo.MUJER.")
 
     # Interpretación del FFMI basada en género
@@ -134,6 +134,7 @@ def interpretar_ffmi(ffmi: float, genero: Sexo) -> str:
         else:
             return "Imposible sin fármacos"
 
+
 def interpretar_rcc(rcc: float, genero: Sexo) -> str:
     """
     Interpreta la relación cintura-cadera basándose en umbrales específicos
@@ -150,7 +151,7 @@ def interpretar_rcc(rcc: float, genero: Sexo) -> str:
         ValueError: Si el valor de 'genero' no es Sexo.HOMBRE o Sexo.MUJER.
     """
     # Validación del género
-    if not isinstance(genero, Sexo): # TODO: esto ya no es necesario porque se importa el Enum Sexo
+    if not isinstance(genero, Sexo):  # TODO: esto ya no es necesario porque se importa el Enum Sexo
         raise ValueError("El valor de 'genero' debe ser Sexo.HOMBRE o Sexo.MUJER.")
 
     # Interpretación del RCC basada en género
@@ -168,6 +169,7 @@ def interpretar_rcc(rcc: float, genero: Sexo) -> str:
             return "Moderado riesgo"
         else:
             return "Bajo riesgo"
+
 
 def interpretar_ratio_cintura_altura(ratio: float) -> str:
     """
