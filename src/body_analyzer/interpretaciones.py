@@ -19,14 +19,14 @@ def interpretar_imc(imc: float, ffmi: float, genero: str) -> str:
         ValueError: Si el valor de 'genero' no es 'h' o 'm'.
     """
     # Validación del género
-    if genero not in ['h', 'm']:
+    if genero not in ["h", "m"]:
         raise ValueError("El valor de 'genero' debe ser 'h' o 'm'.")
 
     # Interpretación basada en IMC y FFMI
-    if genero == 'h':
+    if genero == "h":
         if imc > 25 and ffmi > 19:
             return "El IMC es alto, pero puede estar influenciado por una alta masa muscular."
-    elif genero == 'm':
+    elif genero == "m":
         if imc > 25 and ffmi > 16:
             return "El IMC es alto, pero puede estar influenciado por una alta masa muscular."
 
@@ -60,11 +60,11 @@ def interpretar_porcentaje_grasa(porcentaje_grasa: float, genero: str) -> str:
         ValueError: Si el valor de 'genero' no es 'h' o 'm'.
     """
     # Validación del género
-    if genero not in ['h', 'm']:
+    if genero not in ["h", "m"]:
         raise ValueError("El valor de 'genero' debe ser 'h' o 'm'.")
 
     # Interpretación del porcentaje de grasa
-    if genero == 'h':
+    if genero == "h":
         if porcentaje_grasa > GRASA_ALTA_HOMBRES:
             return "Alto"
         elif porcentaje_grasa < GRASA_BAJA_HOMBRES:
@@ -100,11 +100,11 @@ def interpretar_ffmi(ffmi: float, genero: str) -> str:
         ValueError: Si el valor de 'genero' no es 'h' o 'm'.
     """
     # Validación del género
-    if genero not in ['h', 'm']:
+    if genero not in ["h", "m"]:
         raise ValueError("El valor de 'genero' debe ser 'h' o 'm'.")
 
     # Interpretación del FFMI basada en género
-    if genero == 'h':
+    if genero == "h":
         if ffmi < FFMI_UMBRAL_HOMBRES[0]:
             return "Lejos del máximo potencial (pobre forma física)"
         elif FFMI_UMBRAL_HOMBRES[0] <= ffmi < FFMI_UMBRAL_HOMBRES[1]:
@@ -172,11 +172,11 @@ def interpretar_rcc(rcc: float, genero: str) -> str:
         ValueError: Si el valor de 'genero' no es 'h' o 'm'.
     """
     # Validación del género
-    if genero not in ['h', 'm']:
+    if genero not in ["h", "m"]:
         raise ValueError("El valor de 'genero' debe ser 'h' o 'm'.")
 
     # Interpretación del RCC basada en género
-    if genero == 'h':
+    if genero == "h":
         if rcc > RCC_ALTO_HOMBRES:
             return "Alto riesgo"
         elif RCC_MODERADO_HOMBRES < rcc <= RCC_ALTO_HOMBRES:
