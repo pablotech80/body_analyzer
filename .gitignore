@@ -1,5 +1,5 @@
 # Entorno virtual
-venv/
+.venv/
 *.egg-info/
 __pycache__/
 *.pyc
@@ -30,3 +30,6 @@ coverage.xml
 # Archivos de test
 tests/.pytest_cache/
 
+# Archivos macOS
+.DS_Store/
+/.coverage
