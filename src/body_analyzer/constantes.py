@@ -1,4 +1,4 @@
-# Constantes para macro nutrientes
+# Constantes para los macro nutrientes
 PROTEIN_DIVISOR = 4
 CARB_DIVISOR = 4
 FAT_DIVISOR = 9
