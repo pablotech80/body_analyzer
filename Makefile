@@ -74,3 +74,29 @@ coverage: install-coverage
 # Clean coverage files
 clean-coverage:
 	rm -rf .coverage htmlcov
+
+# Install formatting tools (black and isort)
+install-formatting-tools:
+	$(VENV_NAME)/bin/pip install black isort
+
+# Format code using isort and black
+format-code: install-formatting-tools
+	$(VENV_NAME)/bin/isort src/
+	$(VENV_NAME)/bin/black src/
+
+# Combined format command for easy use
+format: format-code
+
+# Install pre-commit and hooks
+install-pre-commit:
+	$(VENV_NAME)/bin/pip install pre-commit
+	pre-commit install
+
+#  pre-commit all files
+run-pre-commit:
+	pre-commit run --all-files
+
+# Format code with Black e isort and pre-commit
+format-and-commit:
+	make format-code
+	make run-pre-commit
