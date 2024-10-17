@@ -1,33 +1,42 @@
-
+import math
 
 from .constantes import CARB_DIVISOR, FAT_DIVISOR, PROTEIN_DIVISOR
 from .model import ObjetivoNutricional, Sexo
 
-app = flask.Flask(__name__)
-
 
 # Funciones Lógicas
-
-
 def calcular_porcentaje_grasa(
     cintura: float,
-    cadera: None,
     cuello: float,
     altura: float,
     genero: Sexo,
+    cadera: float = None,  # Opcional solo para hombres, obligatorio para mujeres
 ) -> float:
     """
     Calcula el porcentaje de grasa corporal utilizando la fórmula de la Marina de los EE.UU.
+
     Args:
-        cintura: Circunferencia de la cintura en cm. (float)
-        cadera: Circunferencia de la cadera en cm, solo para mujeres.(float)
-        cuello: Circunferencia del cuello en cm. (float)
-        altura: Altura en cm.(float)
-        genero: Género de la persona, 'h' para hombre y 'm' para mujer, se utiliza Enum para evitar errores.
-        Porcentaje de grasa corporal redondeado a dos decimales.
+        cintura (float): Circunferencia de la cintura en cm.
+        cuello (float): Circunferencia del cuello en cm.
+        altura (float): Altura en cm.
+        genero (Sexo): Género de la persona, Sexo.HOMBRE o Sexo.MUJER.
+        cadera (float, opcional): Circunferencia de la cadera en cm, solo para mujeres.
+
+    Returns:
+        float: Porcentaje de grasa corporal redondeado a dos decimales.
+
+    Raises:
+        ValueError: Si los valores de las medidas no son válidos o si faltan datos para mujeres.
     """
 
-    if genero == Sexo.HOMBRE and (cintura <= cuello):
+    # Validación del género
+    if genero not in [Sexo.HOMBRE, Sexo.MUJER]:
+        raise ValueError("El valor de 'genero' debe ser Sexo.HOMBRE o Sexo.MUJER.")
+
+    # Cálculo para hombres
+    if genero == Sexo.HOMBRE:
+        if cintura <= cuello:
+            raise ValueError("La cintura debe ser mayor que el cuello para hombres.")
         porcentaje_grasa = (
             495
             / (
@@ -38,9 +47,14 @@ def calcular_porcentaje_grasa(
             - 450
         )
 
-    elif genero == Sexo.MUJER and (cadera is None or (cintura + cadera <= cuello)):
+    # Cálculo para mujeres
+    elif genero == Sexo.MUJER:
         if cadera is None:
             raise ValueError("Para mujeres, la cadera debe ser especificada.")
+        if cintura + cadera <= cuello:
+            raise ValueError(
+                "La suma de cintura y cadera debe ser mayor que el cuello para mujeres."
+            )
         porcentaje_grasa = (
             495
             / (
@@ -50,9 +64,7 @@ def calcular_porcentaje_grasa(
             )
             - 450
         )
-        return porcentaje_grasa
-    else:
-        raise ValueError("El valor de 'genero' debe ser 'h' o 'm'.")
+
     return round(porcentaje_grasa, 2)
 
 
@@ -224,7 +236,7 @@ def calcular_ffmi(
 
 def calcular_rcc(
     cintura: float,  # TODO: No es necesario que sea un int
-    cadera: Optional[float],
+    cadera: float,
 ) -> float:
     """
     Calcula la relación cintura-cadera, un indicador de la,
