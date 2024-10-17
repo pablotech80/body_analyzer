@@ -1,7 +1,4 @@
-import math
-from typing import Optional
 
-import flask
 
 from .constantes import CARB_DIVISOR, FAT_DIVISOR, PROTEIN_DIVISOR
 from .model import ObjetivoNutricional, Sexo
