@@ -42,17 +42,31 @@ def configure_routes(app):
     @app.route("/calcular_sobrepeso", methods=["POST"])
     def calcular_sobrepeso_endpoint():
         try:
+            # Obtener datos de la solicitud
             data = request.get_json()
             peso = data.get("peso")
             altura = data.get("altura")
 
-            if None in (peso, altura):
-                return jsonify({"error": "Faltan parámetros obligatorios"}), 400
+            # Validación de parámetros obligatorios
+            if peso is None or altura is None:
+                return (
+                    jsonify(
+                        {
+                            "error": "Faltan parámetros obligatorios: peso y altura son requeridos"
+                        }
+                    ),
+                    400,
+                )
 
+            # Calcular sobrepeso
             resultado = calcular_sobrepeso(peso, altura)
-            return jsonify({"sobrepeso": resultado}), 200
+            resultado_formateado = f"{resultado:.2f}"
+
+            # Devolver el resultado formateado en JSON
+            return jsonify({"sobrepeso": resultado_formateado}), 200
 
         except ValueError as e:
+            # Capturar errores de valor y devolver un mensaje de error
             return jsonify({"error": str(e)}), 400
 
     @app.route("/calcular_rcc", methods=["POST"])
