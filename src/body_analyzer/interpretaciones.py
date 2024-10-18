@@ -9,7 +9,7 @@ def interpretar_imc(imc: float, ffmi: float, genero: Sexo) -> str:
     Args:
         imc (float): Índice de Masa Corporal calculado.
         ffmi (float): Índice de Masa Libre de Grasa.
-        genero (str): Género del usuario (Sexo.HOMBRE para hombre, Sexo.MUJER para mujer).
+        genero (Sexo): Género del usuario (Sexo.HOMBRE o Sexo.MUJER).
 
     Returns:
         str: Interpretación del IMC basada en los valores de FFMI y género.
@@ -17,19 +17,14 @@ def interpretar_imc(imc: float, ffmi: float, genero: Sexo) -> str:
     Raises:
         ValueError: Si el valor de 'genero' no es Sexo.HOMBRE o Sexo.MUJER.
     """
-    # Validación del género
-    if not isinstance(genero, Sexo):  # TODO: esto ya no es necesario porque se importa el Enum Sexo
-        raise ValueError("El valor de 'genero' debe ser Sexo.HOMBRE o Sexo.MUJER.")
+    if genero not in [Sexo.HOMBRE, Sexo.MUJER]:
+        raise ValueError("Género no válido. Debe ser 'Sexo.HOMBRE' o 'Sexo.MUJER'.")
 
-    # Interpretación basada en IMC y FFMI
-    if genero == Sexo.HOMBRE:
-        if imc > 25 and ffmi > 19:
-            return "El IMC es alto, pero puede estar influenciado por una alta masa muscular."
-    elif genero == Sexo.MUJER:
-        if imc > 25 and ffmi > 16:
-            return "El IMC es alto, pero puede estar influenciado por una alta masa muscular."
-
-    if imc < 18.5:
+    if imc > 25 and ffmi > 16:
+        return (
+            "El IMC es alto, pero puede estar influenciado por una alta masa muscular."
+        )
+    elif imc < 18.5:
         return "El IMC es bajo, se recomienda consultar con un profesional de salud."
     else:
         return "El IMC está dentro del rango normal."
@@ -42,7 +37,7 @@ def interpretar_porcentaje_grasa(porcentaje_grasa: float, genero: Sexo) -> str:
 
     Args:
         porcentaje_grasa (float): El porcentaje de grasa corporal calculado.
-        genero (str): El género del individuo (Sexo.HOMBRE para hombres, Sexo.MUJER para mujeres).
+        genero (Sexo): Género del individuo (Sexo.HOMBRE para hombres, Sexo.MUJER para mujeres).
 
     Returns:
         str: Una cadena de texto que describe el estado del porcentaje
@@ -51,11 +46,9 @@ def interpretar_porcentaje_grasa(porcentaje_grasa: float, genero: Sexo) -> str:
     Raises:
         ValueError: Si el valor de 'genero' no es Sexo.HOMBRE o Sexo.MUJER.
     """
-    # Validación del género
-    if not isinstance(genero, Sexo):  # TODO: esto ya no es necesario porque se importa el Enum Sexo
-        raise ValueError("El valor de 'genero' debe ser Sexo.HOMBRE o Sexo.MUJER.")
+    if genero not in [Sexo.HOMBRE, Sexo.MUJER]:
+        raise ValueError("Género no válido. Debe ser 'Sexo.HOMBRE' o 'Sexo.MUJER'.")
 
-    # Interpretación del porcentaje de grasa
     if genero == Sexo.HOMBRE:
         if porcentaje_grasa > GRASA_ALTA_HOMBRES:
             return "Alto"
@@ -63,7 +56,7 @@ def interpretar_porcentaje_grasa(porcentaje_grasa: float, genero: Sexo) -> str:
             return "Bajo"
         else:
             return "Normal"
-    else:  # genero == Sexo.MUJER
+    else:  # Sexo.MUJER
         if porcentaje_grasa > GRASA_ALTA_MUJERES:
             return "Alto"
         elif porcentaje_grasa < GRASA_BAJA_MUJERES:
@@ -78,7 +71,7 @@ def interpretar_ffmi(ffmi: float, genero: Sexo) -> str:
 
     Args:
         ffmi (float): Valor del FFMI a interpretar.
-        genero (str): Género del usuario (Sexo.HOMBRE para hombres, Sexo.MUJER para mujeres).
+        genero (Sexo): Género del usuario (Sexo.HOMBRE o Sexo.MUJER).
 
     Returns:
         str: Descripción del nivel de forma física basado en el FFMI.
@@ -86,53 +79,29 @@ def interpretar_ffmi(ffmi: float, genero: Sexo) -> str:
     Raises:
         ValueError: Si el valor de 'genero' no es Sexo.HOMBRE o Sexo.MUJER.
     """
-    # Validación del género
-    if not isinstance(genero, Sexo):  # TODO: esto ya no es necesario porque se importa el Enum Sexo
-        raise ValueError("El valor de 'genero' debe ser Sexo.HOMBRE o Sexo.MUJER.")
+    if genero not in [Sexo.HOMBRE, Sexo.MUJER]:
+        raise ValueError("Género no válido. Debe ser 'Sexo.HOMBRE' o 'Sexo.MUJER'.")
 
-    # Interpretación del FFMI basada en género
-    if genero == Sexo.HOMBRE:
-        if ffmi < FFMI_UMBRAL_HOMBRES[0]:
-            return "Lejos del máximo potencial (pobre forma física)"
-        elif FFMI_UMBRAL_HOMBRES[0] <= ffmi < FFMI_UMBRAL_HOMBRES[1]:
-            return "Cercano a la normalidad"
-        elif FFMI_UMBRAL_HOMBRES[1] <= ffmi < FFMI_UMBRAL_HOMBRES[2]:
-            return "Normal"
-        elif FFMI_UMBRAL_HOMBRES[2] <= ffmi < FFMI_UMBRAL_HOMBRES[3]:
-            return "Superior a la normalidad (buena forma física)"
-        elif FFMI_UMBRAL_HOMBRES[3] <= ffmi < FFMI_UMBRAL_HOMBRES[4]:
-            return "Fuerte (Muy buena forma física)"
-        elif FFMI_UMBRAL_HOMBRES[4] <= ffmi < FFMI_UMBRAL_HOMBRES[5]:
-            return "Muy fuerte (Excelente forma física). Cerca del máximo potencial."
-        elif FFMI_UMBRAL_HOMBRES[5] <= ffmi < FFMI_UMBRAL_HOMBRES[6]:
-            return "Muy cerca del máximo potencial."
-        elif FFMI_UMBRAL_HOMBRES[6] <= ffmi < FFMI_UMBRAL_HOMBRES[7]:
-            return "Potencial máximo natural alcanzado. Muy muy pocos llegan naturales"
-        elif FFMI_UMBRAL_HOMBRES[7] <= ffmi < FFMI_UMBRAL_HOMBRES[8]:
-            return "Prácticamente imposible sin fármacos"
-        else:
-            return "Imposible sin fármacos"
-    else:  # genero == Sexo.MUJER
-        if ffmi < FFMI_UMBRAL_MUJERES[0]:
-            return "Lejos del máximo potencial (pobre forma física)"
-        elif FFMI_UMBRAL_MUJERES[0] <= ffmi < FFMI_UMBRAL_MUJERES[1]:
-            return "Cercano a la normalidad"
-        elif FFMI_UMBRAL_MUJERES[1] <= ffmi < FFMI_UMBRAL_MUJERES[2]:
-            return "Normal"
-        elif FFMI_UMBRAL_MUJERES[2] <= ffmi < FFMI_UMBRAL_MUJERES[3]:
-            return "Superior a la normalidad (buena forma física)"
-        elif FFMI_UMBRAL_MUJERES[3] <= ffmi < FFMI_UMBRAL_MUJERES[4]:
-            return "Fuerte (Muy buena forma física)"
-        elif FFMI_UMBRAL_MUJERES[4] <= ffmi < FFMI_UMBRAL_MUJERES[5]:
-            return "Muy fuerte (Excelente forma física). Cerca del máximo potencial."
-        elif FFMI_UMBRAL_MUJERES[5] <= ffmi < FFMI_UMBRAL_MUJERES[6]:
-            return "Muy cerca del máximo potencial."
-        elif FFMI_UMBRAL_MUJERES[6] <= ffmi < FFMI_UMBRAL_MUJERES[7]:
-            return "Potencial máximo natural alcanzado. Muy muy pocos llegan naturales"
-        elif FFMI_UMBRAL_MUJERES[7] <= ffmi < FFMI_UMBRAL_MUJERES[8]:
-            return "Prácticamente imposible sin fármacos"
-        else:
-            return "Imposible sin fármacos"
+    umbrales = FFMI_UMBRAL_HOMBRES if genero == Sexo.HOMBRE else FFMI_UMBRAL_MUJERES
+
+    if ffmi < umbrales[0]:
+        return "Lejos del máximo potencial (pobre forma física)"
+    elif umbrales[0] <= ffmi < umbrales[1]:
+        return "Cercano a la normalidad"
+    elif umbrales[1] <= ffmi < umbrales[2]:
+        return "Normal"
+    elif umbrales[2] <= ffmi < umbrales[3]:
+        return "Superior a la normalidad (buena forma física)"
+    elif umbrales[3] <= ffmi < umbrales[4]:
+        return "Fuerte (Muy buena forma física)"
+    elif umbrales[4] <= ffmi < umbrales[5]:
+        return "Muy fuerte (Excelente forma física). Cerca del máximo potencial."
+    elif umbrales[5] <= ffmi < umbrales[6]:
+        return "Muy cerca del máximo potencial."
+    elif umbrales[6] <= ffmi < umbrales[7]:
+        return "Potencial máximo natural alcanzado. Muy muy pocos llegan naturales"
+    else:
+        return "Imposible sin fármacos"
 
 
 def interpretar_rcc(rcc: float, genero: Sexo) -> str:
@@ -142,7 +111,7 @@ def interpretar_rcc(rcc: float, genero: Sexo) -> str:
 
     Args:
         rcc (float): Relación cintura-cadera calculada.
-        genero (str): Género del usuario (Sexo.HOMBRE para hombre, Sexo.MUJER para mujer).
+        genero (Sexo): Género del usuario (Sexo.HOMBRE o Sexo.MUJER).
 
     Returns:
         str: Interpretación del nivel de riesgo asociado con la RCC.
@@ -150,11 +119,9 @@ def interpretar_rcc(rcc: float, genero: Sexo) -> str:
     Raises:
         ValueError: Si el valor de 'genero' no es Sexo.HOMBRE o Sexo.MUJER.
     """
-    # Validación del género
-    if not isinstance(genero, Sexo):  # TODO: esto ya no es necesario porque se importa el Enum Sexo
-        raise ValueError("El valor de 'genero' debe ser Sexo.HOMBRE o Sexo.MUJER.")
+    if genero not in [Sexo.HOMBRE, Sexo.MUJER]:
+        raise ValueError("Género no válido. Debe ser 'Sexo.HOMBRE' o 'Sexo.MUJER'.")
 
-    # Interpretación del RCC basada en género
     if genero == Sexo.HOMBRE:
         if rcc > RCC_ALTO_HOMBRES:
             return "Alto riesgo"
@@ -162,7 +129,7 @@ def interpretar_rcc(rcc: float, genero: Sexo) -> str:
             return "Moderado riesgo"
         else:
             return "Bajo riesgo"
-    else:  # genero == Sexo.MUJER
+    else:  # Sexo.MUJER
         if rcc > RCC_ALTO_MUJERES:
             return "Alto riesgo"
         elif RCC_MODERADO_MUJERES < rcc <= RCC_ALTO_MUJERES:
@@ -184,11 +151,9 @@ def interpretar_ratio_cintura_altura(ratio: float) -> str:
     Raises:
         ValueError: Si el valor de 'ratio' no es positivo.
     """
-    # Validación del ratio
     if ratio <= 0:
         raise ValueError("El valor del 'ratio' debe ser un número positivo.")
 
-    # Interpretación del ratio cintura-altura
     if ratio >= RATIO_ALTO_RIESGO:
         return "Alto riesgo"
     elif RATIO_MODERADO_RIESGO <= ratio < RATIO_ALTO_RIESGO:
