@@ -6,6 +6,7 @@ from .model import Sexo
 
 
 def configure_routes(app):
+    print("Configuring routes")
     """
     Configura las rutas de la aplicación Flask.
 
@@ -15,37 +16,35 @@ def configure_routes(app):
 
     @app.route("/calcular_porcentaje_grasa", methods=["POST"])
     def calcular_grasa_endpoint():
-        """
-        Calcula el porcentaje de grasa corporal basado en los parámetros recibidos.
-
-        Parámetros de la solicitud JSON:
-        - cintura: Circunferencia de cintura (obligatorio)
-        - cadera: Circunferencia de cadera (opcional)
-        - cuello: Circunferencia de cuello (obligatorio)
-        - altura: Altura de la persona (obligatorio)
-        - genero: Género de la persona ('h' para hombre, 'm' para mujer) (obligatorio)
-
-        :return: Un JSON con el porcentaje de grasa o un mensaje de error.
-        """
         try:
             data = request.get_json()
+            print(data)  # Esto imprimirá el JSON recibido en la consola
+
             cintura = data.get("cintura")
-            cadera = data.get("cadera")
+            cadera = data.get("cadera")  # Este campo será None para hombres
             cuello = data.get("cuello")
             altura = data.get("altura")
             genero = data.get("genero")
 
+            # Verificar si todos los parámetros obligatorios están presentes
             if None in (cintura, cuello, altura, genero):
                 return jsonify({"error": "Faltan parámetros obligatorios"}), 400
-            if genero not in [Sexo.HOMBRE.value, Sexo.MUJER.value]:
+
+            # Validar genero ('h' o 'm')
+            if genero not in ["h", "m"]:
                 return (
                     jsonify({"error": "El valor de 'genero' debe ser 'h' o 'm'."}),
                     400,
                 )
 
+            # Convertir genero a Enum Sexo
+            genero_enum = Sexo.HOMBRE if genero == "h" else Sexo.MUJER
+
+            # Llamar a la función de cálculo
             resultado = calcular_porcentaje_grasa(
-                cintura, cadera, cuello, altura, Sexo(genero)
+                cintura, cuello, altura, genero_enum, cadera
             )
+
             return jsonify({"porcentaje_grasa": resultado}), 200
 
         except ValueError as e:
@@ -64,17 +63,53 @@ def configure_routes(app):
         """
         try:
             data = request.get_json()
+
+            # Validación de parámetros obligatorios
             peso = data.get("peso")
             altura = data.get("altura")
 
             if None in (peso, altura):
-                return jsonify({"error": "Faltan parámetros obligatorios"}), 400
+                return (
+                    jsonify(
+                        {
+                            "error": "Faltan parámetros obligatorios: peso y altura son requeridos."
+                        }
+                    ),
+                    400,
+                )
 
+            # Validación adicional de tipos de datos
+            if not isinstance(peso, (int, float)) or not isinstance(
+                altura, (int, float)
+            ):
+                return (
+                    jsonify(
+                        {
+                            "error": "Los parámetros 'peso' y 'altura' deben ser numéricos."
+                        }
+                    ),
+                    400,
+                )
+
+            if peso <= 0 or altura <= 0:
+                return (
+                    jsonify(
+                        {
+                            "error": "Los valores de 'peso' y 'altura' deben ser mayores que 0."
+                        }
+                    ),
+                    400,
+                )
+
+            # Calcular sobrepeso
             resultado = calcular_sobrepeso(peso, altura)
+
             return jsonify({"sobrepeso": f"{resultado:.2f}"}), 200
 
         except ValueError as e:
             return jsonify({"error": str(e)}), 400
+        except Exception as e:
+            return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
 
     @app.route("/calcular_rcc", methods=["POST"])
     def calcular_rcc_endpoint():
@@ -175,10 +210,22 @@ def configure_routes(app):
             edad = data.get("edad")
             genero = data.get("genero")
 
+            # Verificar si todos los parámetros obligatorios están presentes
             if None in (peso, altura, edad, genero):
                 return jsonify({"error": "Faltan parámetros obligatorios"}), 400
 
-            resultado = calcular_agua_total(peso, altura, edad, genero)
+            # Validar genero ('h' o 'm')
+            if genero not in ["h", "m"]:
+                return (
+                    jsonify({"error": "El valor de 'genero' debe ser 'h' o 'm'."}),
+                    400,
+                )
+
+            # Convertir genero a Enum Sexo
+            genero_enum = Sexo.HOMBRE if genero == "h" else Sexo.MUJER
+
+            # Llamar a la función de cálculo
+            resultado = calcular_agua_total(peso, altura, edad, genero_enum)
             return jsonify({"agua_total": resultado}), 200
 
         except ValueError as e:
