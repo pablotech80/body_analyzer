@@ -15,6 +15,51 @@ def configure_routes(app):
     :return: None
     """
 
+    @app.route("/calcular_porcentaje_grasa", methods=["POST"])
+    def calcular_porcentaje_grasa_endpoint():
+        try:
+            data = request.get_json()
+            cintura = data.get("cintura")
+            cuello = data.get("cuello")
+            altura = data.get("altura")
+            genero = data.get("genero")
+            cadera = data.get("cadera")
+
+            # Verificar los parámetros requeridos para hombres y mujeres
+            if None in (cintura, cuello, altura, genero):
+                return jsonify({"error": "Faltan parámetros obligatorios"}), 400
+
+            # Verificar que el género sea válido
+            if genero not in ["h", "m"]:
+                return (
+                    jsonify({"error": "El valor de 'genero' debe ser 'h' o 'm'."}),
+                    400,
+                )
+
+            # Verificar el valor de cadera si el género es mujer
+            if genero == "m" and cadera is None:
+                return (
+                    jsonify(
+                        {"error": "Para mujeres, la cadera debe ser especificada."}
+                    ),
+                    400,
+                )
+
+            # Convertir genero a Enum Sexo
+            genero_enum = Sexo.HOMBRE if genero == "h" else Sexo.MUJER
+
+            # Calcular el porcentaje de grasa
+            porcentaje_grasa = calcular_porcentaje_grasa(
+                cintura, cuello, altura, genero_enum, cadera
+            )
+
+            return jsonify({"porcentaje_grasa": round(porcentaje_grasa, 2)}), 200
+
+        except ValueError as e:
+            return jsonify({"error": str(e)}), 400
+        except Exception as e:
+            return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
+
     @app.route("/calcular_peso_grasa_corporal", methods=["POST"])
     def calcular_peso_grasa_corporal_endpoint():
         """
@@ -630,44 +675,5 @@ def configure_routes(app):
             return jsonify({"error": f"Error de valor: {str(e)}"}), 400
         except TypeError as e:
             return jsonify({"error": f"Error de tipo: {str(e)}"}), 400
-        except Exception as e:
-            return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
-
-    @app.route("/informe_completo", methods=["POST"])
-    def informe_completo_endpoint():
-        """
-        Genera un informe completo basado en los datos proporcionados.
-
-        Parámetros de la solicitud JSON:
-        - peso: Peso de la persona (obligatorio)
-        - altura: Altura de la persona (obligatorio)
-        - edad: Edad de la persona (obligatorio)
-        - genero: Género de la persona ('h' para hombre, 'm' para mujer) (obligatorio)
-        - cuello: Circunferencia del cuello (obligatorio)
-        - cintura: Circunferencia de la cintura (obligatorio)
-        - cadera: Circunferencia de la cadera (opcional, solo para mujeres)
-
-        :return: Un JSON con el informe completo o un mensaje de error.
-        """
-        try:
-            # Obtener los datos del cuerpo de la solicitud
-            data = request.get_json()
-
-            # Validación de datos recibidos en el request
-            if not data:
-                return jsonify({"error": "No se proporcionaron datos"}), 400
-
-            # Generar el informe completo utilizando la función informe_completo
-            informe = informe_completo(data)
-
-            # Si hay un error en el informe, devolver el error con el estado adecuado
-            if "error" in informe:
-                return jsonify(informe), 400
-
-            # Devolver el informe completo
-            return jsonify(informe), 200
-
-        except ValueError as e:
-            return jsonify({"error": str(e)}), 400
         except Exception as e:
             return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
