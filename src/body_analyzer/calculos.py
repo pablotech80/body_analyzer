@@ -361,3 +361,30 @@ def calcular_macronutrientes(calorias: float, objetivo: ObjetivoNutricional) -> 
         grasas = (calorias * 0.20) / FAT_DIVISOR
 
     return float(proteinas), float(carbohidratos), float(grasas)
+
+
+def calcular_peso_grasa_corporal(peso: float, porcentaje_grasa: float) -> float:
+    """
+    Calcula el peso de la grasa corporal en kilogramos.
+
+    Args:
+        peso (float): Peso total de la persona en kilogramos.
+        porcentaje_grasa (float): Porcentaje de grasa corporal (entre 0 y 100).
+
+    Returns:
+        float: Peso de la grasa corporal en kilogramos.
+
+    Raises:
+        ValueError: Si los valores de peso o porcentaje de grasa no son correctos.
+    """
+
+    # Validaciones de entrada
+    if not isinstance(peso, float) or peso <= 0:
+        raise ValueError("El peso debe ser un número positivo.")
+    if not isinstance(porcentaje_grasa, float) or not (0 <= porcentaje_grasa <= 100):
+        raise ValueError("El porcentaje de grasa corporal debe estar entre 0 y 100.")
+
+    # Cálculo del peso de la grasa corporal
+    peso_grasa_corporal = peso * (porcentaje_grasa / 100)
+
+    return round(peso_grasa_corporal, 2)

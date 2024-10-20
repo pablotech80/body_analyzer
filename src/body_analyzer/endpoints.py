@@ -1,5 +1,6 @@
 from flask import jsonify, request
 
+from .analisis_completo import informe_completo
 from .calculos import *
 from .constantes import *
 from .model import Sexo
@@ -14,41 +15,74 @@ def configure_routes(app):
     :return: None
     """
 
-    @app.route("/calcular_porcentaje_grasa", methods=["POST"])
-    def calcular_grasa_endpoint():
+    @app.route("/calcular_peso_grasa_corporal", methods=["POST"])
+    def calcular_peso_grasa_corporal_endpoint():
+        """
+        Calcula el peso de la grasa corporal basado en los parámetros recibidos.
+
+        Parámetros de la solicitud JSON:
+        - peso: Peso total de la persona en kilogramos (obligatorio).
+        - porcentaje_grasa: Porcentaje de grasa corporal (entre 0 y 100) (obligatorio).
+
+        :return: Un JSON con el peso de la grasa corporal en kilogramos o un mensaje de error.
+        """
         try:
+            # Obtener los datos del cuerpo de la solicitud
             data = request.get_json()
-            print(data)  # Esto imprimirá el JSON recibido en la consola
 
-            cintura = data.get("cintura")
-            cadera = data.get("cadera")  # Este campo será None para hombres
-            cuello = data.get("cuello")
-            altura = data.get("altura")
-            genero = data.get("genero")
-
-            # Verificar si todos los parámetros obligatorios están presentes
-            if None in (cintura, cuello, altura, genero):
-                return jsonify({"error": "Faltan parámetros obligatorios"}), 400
-
-            # Validar genero ('h' o 'm')
-            if genero not in ["h", "m"]:
+            # Comprobación de existencia de parámetros
+            if "peso" not in data or "porcentaje_grasa" not in data:
                 return (
-                    jsonify({"error": "El valor de 'genero' debe ser 'h' o 'm'."}),
+                    jsonify(
+                        {
+                            "error": "Faltan parámetros obligatorios: 'peso' y 'porcentaje_grasa'."
+                        }
+                    ),
                     400,
                 )
 
-            # Convertir genero a Enum Sexo
-            genero_enum = Sexo.HOMBRE if genero == "h" else Sexo.MUJER
+            peso = data.get("peso")
+            porcentaje_grasa = data.get("porcentaje_grasa")
 
-            # Llamar a la función de cálculo
-            resultado = calcular_porcentaje_grasa(
-                cintura, cuello, altura, genero_enum, cadera
-            )
+            # Validación de tipos de datos y valores
+            if not isinstance(peso, float):
+                return (
+                    jsonify(
+                        {"error": "El valor de 'peso' debe ser un número positivo."}
+                    ),
+                    400,
+                )
+            if not isinstance(porcentaje_grasa, float):
+                return (
+                    jsonify(
+                        {
+                            "error": "El valor de 'porcentaje_grasa' debe ser un número entre 0 y 100."
+                        }
+                    ),
+                    400,
+                )
 
-            return jsonify({"porcentaje_grasa": resultado}), 200
+            # Validación de rango de valores
+            if peso <= 0:
+                return jsonify({"error": "El peso debe ser un número positivo."}), 400
+            if not (0 <= porcentaje_grasa <= 100):
+                return (
+                    jsonify(
+                        {"error": "El porcentaje de grasa debe estar entre 0 y 100."}
+                    ),
+                    400,
+                )
+
+            # Calcular el peso de la grasa corporal
+            resultado = calcular_peso_grasa_corporal(peso, porcentaje_grasa)
+
+            # Devolver el resultado
+            return jsonify({"peso_grasa_corporal": resultado}), 200
 
         except ValueError as e:
             return jsonify({"error": str(e)}), 400
+        except Exception as e:
+            return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
 
     @app.route("/calcular_sobrepeso", methods=["POST"])
     def calcular_sobrepeso_endpoint():
@@ -353,9 +387,9 @@ def configure_routes(app):
 
             # Validación del género: convertir a la enumeración Sexo
             if genero == "h":
-                genero_enum = Sexo.HOMBRE
+                Sexo.HOMBRE
             elif genero == "m":
-                genero_enum = Sexo.MUJER
+                Sexo.MUJER
             else:
                 return jsonify({"error": "Género no válido"}), 400
 
@@ -596,5 +630,44 @@ def configure_routes(app):
             return jsonify({"error": f"Error de valor: {str(e)}"}), 400
         except TypeError as e:
             return jsonify({"error": f"Error de tipo: {str(e)}"}), 400
+        except Exception as e:
+            return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
+
+    @app.route("/informe_completo", methods=["POST"])
+    def informe_completo_endpoint():
+        """
+        Genera un informe completo basado en los datos proporcionados.
+
+        Parámetros de la solicitud JSON:
+        - peso: Peso de la persona (obligatorio)
+        - altura: Altura de la persona (obligatorio)
+        - edad: Edad de la persona (obligatorio)
+        - genero: Género de la persona ('h' para hombre, 'm' para mujer) (obligatorio)
+        - cuello: Circunferencia del cuello (obligatorio)
+        - cintura: Circunferencia de la cintura (obligatorio)
+        - cadera: Circunferencia de la cadera (opcional, solo para mujeres)
+
+        :return: Un JSON con el informe completo o un mensaje de error.
+        """
+        try:
+            # Obtener los datos del cuerpo de la solicitud
+            data = request.get_json()
+
+            # Validación de datos recibidos en el request
+            if not data:
+                return jsonify({"error": "No se proporcionaron datos"}), 400
+
+            # Generar el informe completo utilizando la función informe_completo
+            informe = informe_completo(data)
+
+            # Si hay un error en el informe, devolver el error con el estado adecuado
+            if "error" in informe:
+                return jsonify(informe), 400
+
+            # Devolver el informe completo
+            return jsonify(informe), 200
+
+        except ValueError as e:
+            return jsonify({"error": str(e)}), 400
         except Exception as e:
             return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
