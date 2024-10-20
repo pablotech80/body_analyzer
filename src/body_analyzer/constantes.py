@@ -1,8 +1,9 @@
+# Constantes para los macro nutrientes
 PROTEIN_DIVISOR = 4
 CARB_DIVISOR = 4
 FAT_DIVISOR = 9
 
-# Definir constantes para los umbrales de porcentaje de grasa
+# Constantes para los umbrales de porcentaje de grasa
 GRASA_ALTA_HOMBRES = 25
 GRASA_BAJA_HOMBRES = 6
 GRASA_ALTA_MUJERES = 32

@@ -1,54 +1,74 @@
-from typing import Literal, Union
-
-import flask
 import math
 
-from .constantes import PROTEIN_DIVISOR, CARB_DIVISOR, FAT_DIVISOR
-from .model import Sexo, ObjetivoNutricional
-
-app = flask.Flask(__name__)  # TODO: Revisar si es necesario
+from .constantes import CARB_DIVISOR, FAT_DIVISOR, PROTEIN_DIVISOR
+from .model import ObjetivoNutricional, Sexo
 
 
 # Funciones Lógicas
-
 def calcular_porcentaje_grasa(
-        cintura: Union[int, float],
-        cadera: None,
-        cuello: Union[int, float],
-        altura: float,
-        genero: Sexo
+    cintura: float,
+    cuello: float,
+    altura: float,
+    genero: Sexo,
+    cadera: float = None,  # Opcional solo para hombres, obligatorio para mujeres
 ) -> float:
     """
     Calcula el porcentaje de grasa corporal utilizando la fórmula de la Marina de los EE.UU.
+
     Args:
-        cintura: Circunferencia de la cintura en cm. (float)
-        cadera: Circunferencia de la cadera en cm, solo para mujeres.(float)
-        cuello: Circunferencia del cuello en cm. (float)
-        altura: Altura en cm.(float)
-        genero: Género de la persona, 'h' para hombre y 'm' para mujer.
-        Porcentaje de grasa corporal redondeado a dos decimales.
+        cintura (float): Circunferencia de la cintura en cm.
+        cuello (float): Circunferencia del cuello en cm.
+        altura (float): Altura en cm.
+        genero (Sexo): Género de la persona, Sexo.HOMBRE o Sexo.MUJER.
+        cadera (float, opcional): Circunferencia de la cadera en cm, solo para mujeres.
+
+    Returns:
+        float: Porcentaje de grasa corporal redondeado a dos decimales.
+
+    Raises:
+        ValueError: Si los valores de las medidas no son válidos o si faltan datos para mujeres.
     """
 
-    if genero == Sexo.HOMBRE and (cintura <= cuello):
-        porcentaje_grasa = 495 / (
-                1.0324 - 0.19077 * math.log10(cintura - cuello) + 0.15456 * math.log10(altura)) - 450
+    # Validación del género
+    if genero not in [Sexo.HOMBRE, Sexo.MUJER]:
+        raise ValueError("El valor de 'genero' debe ser Sexo.HOMBRE o Sexo.MUJER.")
 
-    elif genero == Sexo.MUJER and (cadera is None or (cintura + cadera <= cuello)):
+    # Cálculo para hombres
+    if genero == Sexo.HOMBRE:
+        if cintura <= cuello:
+            raise ValueError("La cintura debe ser mayor que el cuello para hombres.")
+        porcentaje_grasa = (
+            495
+            / (
+                1.0324
+                - 0.19077 * math.log10(cintura - cuello)
+                + 0.15456 * math.log10(altura)
+            )
+            - 450
+        )
+
+    # Cálculo para mujeres
+    elif genero == Sexo.MUJER:
         if cadera is None:
             raise ValueError("Para mujeres, la cadera debe ser especificada.")
-        porcentaje_grasa = 495 / (
-                1.29579 - 0.35004 * math.log10(cintura + cadera - cuello) + 0.22100 * math.log10(altura)) - 450
-        return porcentaje_grasa
-    else:
-        raise ValueError("El valor de 'genero' debe ser 'h' o 'm'.")
+        if cintura + cadera <= cuello:
+            raise ValueError(
+                "La suma de cintura y cadera debe ser mayor que el cuello para mujeres."
+            )
+        porcentaje_grasa = (
+            495
+            / (
+                1.29579
+                - 0.35004 * math.log10(cintura + cadera - cuello)
+                + 0.22100 * math.log10(altura)
+            )
+            - 450
+        )
+
     return round(porcentaje_grasa, 2)
 
 
-def calcular_tmb(
-        peso: Union[int, float],
-        altura: float,
-        edad: int,
-        genero: Sexo) -> float:
+def calcular_tmb(peso: float, altura: float, edad: int, genero: Sexo) -> float:
     """Calcula la tasa Metabólica Basal(TMB) usando la fórmula de Harris-Benedict.
 
     Args:
@@ -58,26 +78,26 @@ def calcular_tmb(
         genero: (Literal) 'h' para hombre y 'm' para mujer.
 
     Returns: float: TMB calculada.
-        """
+    """
     # Validaciones de entrada
-    if not isinstance(Sexo, genero):  # TODO
-        raise ValueError("El valor de 'genero' debe ser 'h' para 'hombre' o 'm' para 'mujer'.")
+    if not isinstance(Sexo, genero):
+        raise ValueError(
+            "El valor de 'genero' debe ser 'h' para 'hombre' o 'm' para 'mujer'."
+        )
 
     if peso <= 0 or altura <= 0 or edad <= 0:
         raise ValueError("Peso, altura y edad deben ser valores positivos.")
 
-    if genero == 'h':
+    if genero == "h":
         tmb = 88.362 + (13.397 * peso) + (4.799 * altura) - (5.677 * edad)
-    elif genero == 'm':
+    elif genero == "m":
         tmb = 447.593 + (9.247 * peso) + (3.098 * altura) - (4.330 * edad)
     else:
         raise ValueError("El valor de 'genero' debe ser 'h' o 'm'.")
     return round(tmb, 2)
 
 
-def calcular_imc(
-        peso: Union[int, float],
-        altura: float) -> float:
+def calcular_imc(peso: float, altura: float) -> float:
     """Calcula el Índice de Masa Corporal (IMC).
     Args:
         peso: Peso en kg.(float) Peso del usuario en kg.
@@ -89,17 +109,11 @@ def calcular_imc(
         raise ValueError("Peso y altura deben ser valores positivos.")
 
     altura_m = altura / 100  # Esta variable convierte la altura de metros a cm.
-    imc = peso / (altura_m ** 2)
+    imc = peso / (altura_m**2)
     return round(imc, 2)
 
 
-# TODO: en lugar de usar literales, se puede usar un Enum ver model.py:
-def calcular_agua_total(
-        peso: Union[int, float],
-        altura: float,
-        edad: int,
-        genero: Sexo
-) -> float:
+def calcular_agua_total(peso: float, altura: float, edad: int, genero: Sexo) -> float:
     """
     Calcula el agua total del cuerpo usando una fórmula simplificada basada en el peso, altura y edad del usuario.
 
@@ -107,7 +121,7 @@ def calcular_agua_total(
         peso (float): Peso del usuario en kilogramos.
         altura (float): Altura del usuario en centímetros.
         edad (int): Edad del usuario en años.
-        genero (Literal['h', 'm']): Género del usuario, 'h' para hombre y 'm' para mujer.
+        genero (Literal['h', 'm']): Género del usuario, 'h' para hombre y 'm' para mujer, se utiliza Enum para evitar errores.
 
     Returns:
         float: Agua total estimada en el cuerpo, en litros.
@@ -139,17 +153,15 @@ def calcular_peso_saludable(altura: float) -> tuple:
     altura_m = altura / 100
 
     # Calcular el peso mínimo con IMC 18.5
-    peso_min = 18.5 * (altura_m ** 2)
+    peso_min = 18.5 * (altura_m**2)
 
     # Calcular el peso máximo con IMC 24.9
-    peso_max = 24.9 * (altura_m ** 2)
+    peso_max = 24.9 * (altura_m**2)
 
     return round(peso_min, 2), round(peso_max, 2)
 
 
-def calcular_sobrepeso(
-        peso: Union[int, float],  # TODO: No es necesario que sea un int
-        altura: float) -> float:
+def calcular_sobrepeso(peso: float, altura: float) -> float:  #
     """
     Calcula el sobrepeso comparando el peso actual con el peso máximo saludable.
 
@@ -171,8 +183,8 @@ def calcular_sobrepeso(
 
 
 def calcular_masa_muscular(
-        peso: Union[int, float],  # TODO: No es necesario que sea un int
-        porcentaje_grasa: Union[int, float]  # TODO: No es necesario que sea un int
+    peso: float,
+    porcentaje_grasa: float,
 ) -> float:
     """
     Calcula la masa muscular (masa magra) del cuerpo descontando el porcentaje de grasa corporal.
@@ -186,7 +198,9 @@ def calcular_masa_muscular(
     """
 
     if peso <= 0 or porcentaje_grasa <= 0:
-        raise ValueError("Peso y porcentaje de grasa corporal deben ser valores positivos.")
+        raise ValueError(
+            "Peso y porcentaje de grasa corporal deben ser valores positivos."
+        )
     if not 0 <= porcentaje_grasa <= 100:
         raise ValueError("Porcentaje de grasa corporal debe estar entre 0 y 100.")
 
@@ -195,8 +209,8 @@ def calcular_masa_muscular(
 
 
 def calcular_ffmi(
-        masa_muscular: Union[int, float],  # TODO: No es necesario que sea un int
-        altura: Union[int, float]  # TODO: No es necesario que sea un int
+    masa_muscular: float,
+    altura: float,
 ) -> float:
     """
     Calcula el Índice de Masa Libre de Grasa (FFMI).
@@ -216,13 +230,13 @@ def calcular_ffmi(
     if masa_muscular <= 0 or altura <= 0:
         raise ValueError("La masa muscular y la altura deben ser valores positivos.")
     altura_m = altura / 100
-    ffmi = masa_muscular / (altura_m ** 2)
+    ffmi = masa_muscular / (altura_m**2)
     return round(ffmi, 2)
 
 
 def calcular_rcc(
-        cintura: Union[int, float],  # TODO: No es necesario que sea un int
-        cadera: Union[float, None],  # TODO: Esto es un valor Optional[float]
+    cintura: float,  # TODO: No es necesario que sea un int
+    cadera: float,
 ) -> float:
     """
     Calcula la relación cintura-cadera, un indicador de la,
@@ -246,10 +260,7 @@ def calcular_rcc(
     return round(rcc, 2)
 
 
-def calcular_ratio_cintura_altura(
-        cintura: Union[int, float],
-        altura: Union[int, float]
-) -> float:
+def calcular_ratio_cintura_altura(cintura: float, altura: float) -> float:
     """
     Calcula el ratio cintura-altura, un indicador de riesgo de salud metabólica.
 
@@ -275,8 +286,8 @@ def calcular_ratio_cintura_altura(
 
 
 def calcular_calorias_diarias(
-        tmb: Union[int, float],
-        objetivo: Literal['mantener peso', 'perder grasa', 'ganar masa muscular']
+    tmb: float,
+    objetivo: ObjetivoNutricional,
 ) -> float:
     """
     Calcula las calorías diarias necesarias basadas en la TMB y el objetivo nutricional.
@@ -286,7 +297,8 @@ def calcular_calorias_diarias(
 
     Args:
         tmb (float): Tasa Metabólica Basal calculada.
-        objetivo (str): Objetivo nutricional ('mantener peso', 'perder grasa', 'ganar masa muscular').
+        objetivo (ClassVar[ObjetivoNutricional]): Objetivo nutricional
+        ('mantener peso', 'perder grasa' o 'ganar masa muscular').
 
     Returns:
         float: Calorías diarias ajustadas según el objetivo, redondeadas a dos decimales.
@@ -295,22 +307,19 @@ def calcular_calorias_diarias(
         ValueError: Si el objetivo no es uno de los valores esperados.
     """
 
-    if objetivo not in ['mantener peso', 'perder grasa', 'ganar masa muscular']:
-        raise ValueError("El valor de 'objetivo' debe ser 'mantener peso', 'perder grasa' o 'ganar masa muscular'.")
-
-    # TODO: convertir a constantes los factores de actividad
-    if objetivo == 'mantener peso':
+    if objetivo not in ["mantener peso", "perder grasa", "ganar masa muscular"]:
+        raise ValueError(
+            "El valor de 'objetivo' debe ser 'mantener peso', 'perder grasa' o 'ganar masa muscular'."
+        )
+    if objetivo == ObjetivoNutricional.MANTENER_PESO:
         return tmb * 1.2  # Factor de actividad moderado
-    elif objetivo == 'perder grasa':
+    elif objetivo == ObjetivoNutricional.PERDER_GRASA:
         return tmb * 1.2 * 0.8  # 20% de reducción calórica
-    elif objetivo == 'ganar masa muscular':
+    elif objetivo == ObjetivoNutricional.GANAR_MASA_MUSCULAR:
         return round(tmb * 1.2 * 1.2, 2)  # 20% de aumento calórico
 
 
-def calcular_macronutrientes(
-        calorias: Union[int, float],
-        objetivo: ObjetivoNutricional
-) -> tuple:
+def calcular_macronutrientes(calorias: float, objetivo: ObjetivoNutricional) -> tuple:
     """
     Calcula la distribución de macronutrientes basada en las calorías diarias y el objetivo nutricional.
 
@@ -323,7 +332,7 @@ def calcular_macronutrientes(
         objetivo (str): Objetivo nutricional ('mantener peso', 'perder grasa', 'ganar masa muscular').
 
     Returns:
-        tuple: Una tupla con la cantidad de macronutrientes recomendados
+        tuple: Una tuple con la cantidad de macronutrientes recomendados
         (gramos de proteínas, gramos de carbohidratos, gramos de grasas).
 
     Raises:
@@ -331,7 +340,9 @@ def calcular_macronutrientes(
         ('mantener peso', 'perder grasa', 'ganar masa muscular').
     """
     if not isinstance(objetivo, ObjetivoNutricional):
-        raise ValueError("El valor de 'objetivo' debe ser 'mantener peso', 'perder grasa' o 'ganar muscular'.")
+        raise ValueError(
+            "El valor de 'objetivo' debe ser 'mantener peso', 'perder grasa' o 'ganar muscular'."
+        )
 
     proteinas = carbohidratos = grasas = 0.0
 
@@ -350,3 +361,30 @@ def calcular_macronutrientes(
         grasas = (calorias * 0.20) / FAT_DIVISOR
 
     return float(proteinas), float(carbohidratos), float(grasas)
+
+
+def calcular_peso_grasa_corporal(peso: float, porcentaje_grasa: float) -> float:
+    """
+    Calcula el peso de la grasa corporal en kilogramos.
+
+    Args:
+        peso (float): Peso total de la persona en kilogramos.
+        porcentaje_grasa (float): Porcentaje de grasa corporal (entre 0 y 100).
+
+    Returns:
+        float: Peso de la grasa corporal en kilogramos.
+
+    Raises:
+        ValueError: Si los valores de peso o porcentaje de grasa no son correctos.
+    """
+
+    # Validaciones de entrada
+    if not isinstance(peso, float) or peso <= 0:
+        raise ValueError("El peso debe ser un número positivo.")
+    if not isinstance(porcentaje_grasa, float) or not (0 <= porcentaje_grasa <= 100):
+        raise ValueError("El porcentaje de grasa corporal debe estar entre 0 y 100.")
+
+    # Cálculo del peso de la grasa corporal
+    peso_grasa_corporal = peso * (porcentaje_grasa / 100)
+
+    return round(peso_grasa_corporal, 2)
