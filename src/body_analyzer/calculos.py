@@ -30,7 +30,7 @@ def calcular_porcentaje_grasa(
     """
 
     # Validación del género
-    if genero not in [Sexo.HOMBRE, Sexo.MUJER]:
+    if not isinstance(genero, Sexo):
         raise ValueError("El valor de 'genero' debe ser Sexo.HOMBRE o Sexo.MUJER.")
 
     # Cálculo para hombres
@@ -80,7 +80,7 @@ def calcular_tmb(peso: float, altura: float, edad: int, genero: Sexo) -> float:
     Returns: float: TMB calculada.
     """
     # Validaciones de entrada
-    if not isinstance(Sexo, genero):
+    if not isinstance(genero, Sexo):
         raise ValueError(
             "El valor de 'genero' debe ser 'h' para 'hombre' o 'm' para 'mujer'."
         )
@@ -88,9 +88,9 @@ def calcular_tmb(peso: float, altura: float, edad: int, genero: Sexo) -> float:
     if peso <= 0 or altura <= 0 or edad <= 0:
         raise ValueError("Peso, altura y edad deben ser valores positivos.")
 
-    if genero == "h":
+    if genero == Sexo.HOMBRE:
         tmb = 88.362 + (13.397 * peso) + (4.799 * altura) - (5.677 * edad)
-    elif genero == "m":
+    elif genero == Sexo.MUJER:
         tmb = 447.593 + (9.247 * peso) + (3.098 * altura) - (4.330 * edad)
     else:
         raise ValueError("El valor de 'genero' debe ser 'h' o 'm'.")
@@ -126,6 +126,11 @@ def calcular_agua_total(peso: float, altura: float, edad: int, genero: Sexo) -> 
     Returns:
         float: Agua total estimada en el cuerpo, en litros.
     """
+    # Validaciones de entrada
+    if not isinstance(genero, Sexo):
+        raise ValueError(
+            "El valor de 'genero' debe ser 'h' para 'hombre' o 'm' para 'mujer'."
+        )
 
     if peso <= 0 or altura <= 0 or edad <= 0:
         raise ValueError("Peso, altura y edad deben ser valores positivos.")
@@ -201,7 +206,7 @@ def calcular_masa_muscular(
         raise ValueError(
             "Peso y porcentaje de grasa corporal deben ser valores positivos."
         )
-    if not 0 <= porcentaje_grasa <= 100:
+    if not (0 <= porcentaje_grasa <= 100):
         raise ValueError("Porcentaje de grasa corporal debe estar entre 0 y 100.")
 
     masa_muscular = peso * ((100 - porcentaje_grasa) / 100)
@@ -379,9 +384,9 @@ def calcular_peso_grasa_corporal(peso: float, porcentaje_grasa: float) -> float:
     """
 
     # Validaciones de entrada
-    if not isinstance(peso, float) or peso <= 0:
+    if peso <= 0:
         raise ValueError("El peso debe ser un número positivo.")
-    if not isinstance(porcentaje_grasa, float) or not (0 <= porcentaje_grasa <= 100):
+    if not (0 <= porcentaje_grasa <= 100):
         raise ValueError("El porcentaje de grasa corporal debe estar entre 0 y 100.")
 
     # Cálculo del peso de la grasa corporal

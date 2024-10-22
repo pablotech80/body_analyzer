@@ -20,6 +20,7 @@ def informe_completo(data):
         if None in (peso, altura, edad, genero, cuello, cintura):
             raise ValueError("Faltan parámetros obligatorios.")
 
+
         # Validación de tipos de datos
         if not isinstance(peso, (int, float)) or peso <= 0:
             raise ValueError("El peso debe ser un número positivo.")
@@ -32,9 +33,9 @@ def informe_completo(data):
         if not isinstance(cintura, (int, float)) or cintura <= 0:
             raise ValueError("El valor de 'cintura' debe ser un número positivo.")
         if genero not in ["h", "m"]:
-            raise ValueError("El valor de 'genero' debe ser 'h' o 'm'.")
+            raise ValueError(f"El valor de 'genero' debe ser 'h' o 'm': {genero}")
         if genero == "m" and (
-            cadera is None or not isinstance(cadera, (int, float)) or cadera <= 0
+                cadera is None or not isinstance(cadera, (int, float)) or cadera <= 0
         ):
             raise ValueError(
                 "El valor de 'cadera' debe ser un número positivo para mujeres."
@@ -51,11 +52,13 @@ def informe_completo(data):
                 cintura, cuello, altura, genero_enum, cadera
             ),
         }
+
         resultados["peso_grasa_corporal"] = calcular_peso_grasa_corporal(
             peso, resultados["porcentaje_grasa"]
         )
+
         resultados["masa_muscular"] = peso - resultados["peso_grasa_corporal"]
-        resultados["ffmi"] = calcular_masa_muscular(resultados["masa_muscular"], altura)
+        resultados["ffmi"] = calcular_masa_muscular(peso, resultados["porcentaje_grasa"])
         resultados["rcc"] = calcular_rcc(cintura, cadera) if genero == "m" else "N/A"
         resultados["ratio_cintura_altura"] = cintura / altura
 
