@@ -1,6 +1,5 @@
 from flask import jsonify, request
 
-from .analisis_completo import informe_completo
 from .calculos import *
 from .constantes import *
 from .model import Sexo
