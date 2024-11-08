@@ -21,7 +21,7 @@ def informe_completo(data, float):
             raise ValueError("Faltan parámetros obligatorios.")
 
         # Validación de tipos de datos
-        if not isinstance(peso, (int, float)) or peso <= 0:
+        if not isinstance(peso, float) or peso <= 0:
             raise ValueError("El peso debe ser un número positivo.")
         if not isinstance(altura, (int, float)) or altura <= 0:
             raise ValueError("La altura debe ser un número positivo.")
@@ -49,8 +49,8 @@ def informe_completo(data, float):
             "imc": calcular_imc(peso, altura),
             "porcentaje_grasa": calcular_porcentaje_grasa(
                 cintura, cuello, altura, genero_enum, cadera
-            ),
-        }
+                )
+            }
 
         resultados["peso_grasa_corporal"] = calcular_peso_grasa_corporal(
             peso, resultados["porcentaje_grasa"]
