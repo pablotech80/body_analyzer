@@ -49,7 +49,6 @@ class TestMainEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn("error", json.loads(response.data))
 
-
     def test_calcular_porcentaje_grasa(self):
         # Caso exitoso para un hombre
         response = self.app.post(

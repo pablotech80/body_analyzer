@@ -3,7 +3,7 @@ from .interpretaciones import *
 from .model import Sexo
 
 
-def informe_completo(data):
+def informe_completo(data, float):
     try:
         # Extracción de datos
         peso = data.get("peso")
