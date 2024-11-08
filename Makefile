@@ -3,7 +3,7 @@ VENV_NAME = .venv
 
 # Paths to activate virtual environment and Python
 VENV_ACTIVATE = $(VENV_NAME)/bin/activate
-PYTHON_PATH = $(shell which python3.12)
+PYTHON_PATH = $(shell which python3.13)
 
 # Project name
 PROJECT_NAME = body_analyzer
