@@ -7,6 +7,7 @@ from src.body_analyzer.interpretaciones import (
     interpretar_ratio_cintura_altura,
     interpretar_rcc,
 )
+
 from src.body_analyzer.model import Sexo
 
 from .calculos import *

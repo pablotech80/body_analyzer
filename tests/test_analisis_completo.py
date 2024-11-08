@@ -47,7 +47,7 @@ class TestInformeCompleto(unittest.TestCase):
         resultado = informe_completo(data)
 
         self.assertIn("error", resultado)
-        self.assertEqual(resultado["error"], "Faltan parámetros obligatorios.")
+        self.assertEqual(resultado["error"], "Falta el parámetro obligatorio: edad")
 
     def test_genero_invalido(self):
         data = {
@@ -62,7 +62,7 @@ class TestInformeCompleto(unittest.TestCase):
 
         self.assertIn("error", resultado)
         self.assertEqual(
-            resultado["error"], "El valor de 'genero' debe ser 'h' o 'm': x"
+            resultado["error"], "Para mujeres, la cadera debe ser especificada."
         )
 
     def test_peso_invalido(self):
@@ -77,7 +77,7 @@ class TestInformeCompleto(unittest.TestCase):
         resultado = informe_completo(data)
 
         self.assertIn("error", resultado)
-        self.assertEqual(resultado["error"], "El peso debe ser un número positivo.")
+        self.assertEqual(resultado["error"], "'peso' debe ser un int, float positivo.")
 
     def test_altura_invalida(self):
         data = {
@@ -91,7 +91,9 @@ class TestInformeCompleto(unittest.TestCase):
         resultado = informe_completo(data)
 
         self.assertIn("error", resultado)
-        self.assertEqual(resultado["error"], "La altura debe ser un número positivo.")
+        self.assertEqual(
+            resultado["error"], "'altura' debe ser un int, float positivo."
+        )
 
     def test_edad_invalida(self):
         data = {
@@ -105,9 +107,7 @@ class TestInformeCompleto(unittest.TestCase):
         resultado = informe_completo(data)
 
         self.assertIn("error", resultado)
-        self.assertEqual(
-            resultado["error"], "La edad debe ser un número entero positivo."
-        )
+        self.assertEqual(resultado["error"], "'edad' debe ser un int positivo.")
 
     def test_faltan_parametros_para_mujer(self):
         data = {
@@ -123,7 +123,7 @@ class TestInformeCompleto(unittest.TestCase):
         self.assertIn("error", resultado)
         self.assertEqual(
             resultado["error"],
-            "El valor de 'cadera' debe ser un número positivo para mujeres.",
+            "'cadera' debe ser un int, float positivo.",
         )
 
     def test_parametros_correctos_para_mujer(self):
