@@ -1,6 +1,6 @@
 from flask import json, jsonify, request, Response, Blueprint
 
-from src.body_analyzer.interpretaciones import*
+from src.body_analyzer.interpretaciones import *
 
 from src.body_analyzer.model import Sexo
 from .analisis_completo import validar_parametro
@@ -9,7 +9,8 @@ from .calculos import *
 from .constantes import *
 
 
-bp = Blueprint('body_analyzer', __name__)
+bp = Blueprint("body_analyzer", __name__)
+
 
 def configure_routes(app):
     app.register_blueprint(bp)
@@ -688,7 +689,7 @@ def configure_routes(app):
         except Exception as e:
             return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
 
-    @app.route("/calorias_diarias", methods = ["POST"])
+    @app.route("/calorias_diarias", methods=["POST"])
     def calorias_diarias_endpoint():
         """
         Endpoint para calcular las calorías diarias basadas en TMB y objetivo nutricional.
@@ -711,11 +712,14 @@ def configure_routes(app):
             try:
                 objetivo_enum = ObjetivoNutricional(objetivo)
             except ValueError:
-                return jsonify(
-                    {
-                        "error": "El objetivo debe ser 'mantener peso', 'perder grasa' o 'ganar masa muscular'"
+                return (
+                    jsonify(
+                        {
+                            "error": "El objetivo debe ser 'mantener peso', 'perder grasa' o 'ganar masa muscular'"
                         }
-                    ), 400
+                    ),
+                    400,
+                )
 
             # Calcular TMB y luego calorías diarias
             tmb = calcular_tmb(peso, altura, edad, genero_enum)
@@ -728,7 +732,7 @@ def configure_routes(app):
         except Exception as e:
             return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
 
-    @app.route("/macronutrientes", methods = ["POST"])
+    @app.route("/macronutrientes", methods=["POST"])
     def macronutrientes_endpoint():
         try:
             data = request.get_json()
@@ -742,24 +746,29 @@ def configure_routes(app):
             objetivo_enum = ObjetivoNutricional(objetivo.strip().lower())
 
             # Cálculo de macronutrientes
-            proteinas, carbohidratos, grasas = calcular_macronutrientes(calorias_diarias, objetivo_enum)
+            proteinas, carbohidratos, grasas = calcular_macronutrientes(
+                calorias_diarias, objetivo_enum
+            )
 
-            return jsonify(
-                {
-                    "macronutrientes": {
-                        "proteinas": proteinas,
-                        "carbohidratos": carbohidratos,
-                        "grasas": grasas
+            return (
+                jsonify(
+                    {
+                        "macronutrientes": {
+                            "proteinas": proteinas,
+                            "carbohidratos": carbohidratos,
+                            "grasas": grasas,
                         }
                     }
-                ), 200
+                ),
+                200,
+            )
 
         except ValueError as e:
             return jsonify({"error": str(e)}), 400
         except Exception as e:
             return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
 
-    @app.route("/informe_completo", methods = ["POST"])
+    @app.route("/informe_completo", methods=["POST"])
     def informe_completo_endpoint():
         try:
             data = request.get_json()
@@ -780,7 +789,9 @@ def configure_routes(app):
             objetivo_enum = ObjetivoNutricional(objetivo.strip().lower())
 
             # Realizar cálculos principales
-            porcentaje_grasa = calcular_porcentaje_grasa(cintura, cuello, altura, genero_enum, cadera)
+            porcentaje_grasa = calcular_porcentaje_grasa(
+                cintura, cuello, altura, genero_enum, cadera
+            )
             tmb = calcular_tmb(peso, altura, edad, genero_enum)
             imc = calcular_imc(peso, altura)
             masa_muscular = peso - (peso * (porcentaje_grasa / 100))
@@ -793,14 +804,24 @@ def configure_routes(app):
 
             # Calorías diarias y macronutrientes
             calorias_diarias = calcular_calorias_diarias(tmb, objetivo_enum)
-            proteinas, carbohidratos, grasas = calcular_macronutrientes(calorias_diarias, objetivo_enum)
+            proteinas, carbohidratos, grasas = calcular_macronutrientes(
+                calorias_diarias, objetivo_enum
+            )
 
             # Interpretaciones
             interpretacion_imc = interpretar_imc(imc, ffmi, genero_enum)
-            interpretacion_grasa = interpretar_porcentaje_grasa(porcentaje_grasa, genero_enum)
+            interpretacion_grasa = interpretar_porcentaje_grasa(
+                porcentaje_grasa, genero_enum
+            )
             interpretacion_ffmi = interpretar_ffmi(ffmi, genero_enum)
-            interpretacion_rcc = interpretar_rcc(rcc, genero_enum) if genero_enum == Sexo.MUJER else "N/A"
-            interpretacion_ratio_cintura_altura = interpretar_ratio_cintura_altura(ratio_cintura_altura)
+            interpretacion_rcc = (
+                interpretar_rcc(rcc, genero_enum)
+                if genero_enum == Sexo.MUJER
+                else "N/A"
+            )
+            interpretacion_ratio_cintura_altura = interpretar_ratio_cintura_altura(
+                ratio_cintura_altura
+            )
 
             # Consolidación del informe
             resultados = {
@@ -810,7 +831,10 @@ def configure_routes(app):
                 "masa_muscular": masa_muscular,
                 "agua_total": agua_total,
                 "ffmi": ffmi,
-                "peso_saludable": {"min": peso_saludable_min, "max": peso_saludable_max},
+                "peso_saludable": {
+                    "min": peso_saludable_min,
+                    "max": peso_saludable_max,
+                },
                 "sobrepeso": sobrepeso,
                 "rcc": rcc,
                 "ratio_cintura_altura": ratio_cintura_altura,
@@ -818,9 +842,9 @@ def configure_routes(app):
                 "macronutrientes": {
                     "proteinas": proteinas,
                     "carbohidratos": carbohidratos,
-                    "grasas": grasas
-                    }
-                }
+                    "grasas": grasas,
+                },
+            }
 
             interpretaciones = {
                 "imc": interpretacion_imc,
@@ -828,7 +852,7 @@ def configure_routes(app):
                 "ffmi": interpretacion_ffmi,
                 "rcc": interpretacion_rcc,
                 "ratio_cintura_altura": interpretacion_ratio_cintura_altura,
-                }
+            }
 
             informe = {"resultados": resultados, "interpretaciones": interpretaciones}
 
@@ -838,7 +862,3 @@ def configure_routes(app):
             return jsonify({"error": str(e)}), 400
         except Exception as e:
             return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
-
-
-
-

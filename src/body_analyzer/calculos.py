@@ -292,9 +292,9 @@ def calcular_ratio_cintura_altura(cintura: float, altura: float) -> float:
 
 
 def calcular_calorias_diarias(
-        tmb: float,
-        objetivo: ObjetivoNutricional,
-        ) -> float:
+    tmb: float,
+    objetivo: ObjetivoNutricional,
+) -> float:
     """
     Calcula las calorías diarias necesarias basadas en la TMB y el objetivo nutricional.
 
@@ -312,7 +312,7 @@ def calcular_calorias_diarias(
     if not isinstance(objetivo, ObjetivoNutricional):
         raise ValueError(
             "El objetivo debe ser una instancia de ObjetivoNutricional: 'mantener peso', 'perder grasa' o 'ganar masa muscular'."
-            )
+        )
 
     if objetivo == ObjetivoNutricional.MANTENER_PESO:
         calorias = tmb * 1.2
@@ -357,7 +357,6 @@ def calcular_macronutrientes(calorias: float, objetivo: ObjetivoNutricional) -> 
 
     # Redondeo de cada macronutriente a dos decimales antes de devolverlos
     return round(proteinas, 2), round(carbohidratos, 2), round(grasas, 2)
-
 
 
 def calcular_peso_grasa_corporal(peso: float, porcentaje_grasa: float) -> float:
