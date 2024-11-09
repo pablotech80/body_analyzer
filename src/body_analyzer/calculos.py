@@ -292,18 +292,15 @@ def calcular_ratio_cintura_altura(cintura: float, altura: float) -> float:
 
 
 def calcular_calorias_diarias(
-    tmb: float,
-    objetivo: ObjetivoNutricional,
-) -> float:
+        tmb: float,
+        objetivo: ObjetivoNutricional,
+        ) -> float:
     """
     Calcula las calorías diarias necesarias basadas en la TMB y el objetivo nutricional.
 
-    Dependiendo del objetivo del usuario, se ajustan las calorías para mantener el peso,
-    perder grasa o ganar masa muscular.
-
     Args:
         tmb (float): Tasa Metabólica Basal calculada.
-        objetivo (ClassVar[ObjetivoNutricional]): Objetivo nutricional
+        objetivo (ObjetivoNutricional): Objetivo nutricional
         ('mantener peso', 'perder grasa' o 'ganar masa muscular').
 
     Returns:
@@ -312,45 +309,37 @@ def calcular_calorias_diarias(
     Raises:
         ValueError: Si el objetivo no es uno de los valores esperados.
     """
-
-    if objetivo not in ["mantener peso", "perder grasa", "ganar masa muscular"]:
+    if not isinstance(objetivo, ObjetivoNutricional):
         raise ValueError(
-            "El valor de 'objetivo' debe ser 'mantener peso', 'perder grasa' o 'ganar masa muscular'."
-        )
+            "El objetivo debe ser una instancia de ObjetivoNutricional: 'mantener peso', 'perder grasa' o 'ganar masa muscular'."
+            )
+
     if objetivo == ObjetivoNutricional.MANTENER_PESO:
-        return tmb * 1.2  # Factor de actividad moderado
+        calorias = tmb * 1.2
     elif objetivo == ObjetivoNutricional.PERDER_GRASA:
-        return tmb * 1.2 * 0.8  # 20% de reducción calórica
+        calorias = tmb * 1.2 * 0.8  # 20% de reducción calórica
     elif objetivo == ObjetivoNutricional.GANAR_MASA_MUSCULAR:
-        return round(tmb * 1.2 * 1.2, 2)  # 20% de aumento calórico
+        calorias = tmb * 1.2 * 1.2  # 20% de aumento calórico
+
+    return round(calorias, 2)
 
 
 def calcular_macronutrientes(calorias: float, objetivo: ObjetivoNutricional) -> tuple:
     """
     Calcula la distribución de macronutrientes basada en las calorías diarias y el objetivo nutricional.
 
-    Dependiendo del objetivo del usuario (mantener peso, perder grasa o ganar muscular),
-    se ajusta la proporción de macronutrientes
-    para cumplir con el objetivo nutricional.
-
     Args:
         calorias (float): Calorías diarias recomendadas.
-        objetivo (str): Objetivo nutricional ('mantener peso', 'perder grasa', 'ganar masa muscular').
+        objetivo (ObjetivoNutricional): Objetivo nutricional ('mantener peso', 'perder grasa', 'ganar masa muscular').
 
     Returns:
-        tuple: Una tuple con la cantidad de macronutrientes recomendados
-        (gramos de proteínas, gramos de carbohidratos, gramos de grasas).
-
-    Raises:
-        ValueError: Si el objetivo no es uno de los valores esperados
-        ('mantener peso', 'perder grasa', 'ganar masa muscular').
+        tuple: Una tupla con la cantidad de macronutrientes recomendados
+        (gramos de proteínas, gramos de carbohidratos, gramos de grasas), redondeados a dos decimales.
     """
     if not isinstance(objetivo, ObjetivoNutricional):
         raise ValueError(
-            "El valor de 'objetivo' debe ser 'mantener peso', 'perder grasa' o 'ganar muscular'."
+            "El valor de 'objetivo' debe ser una instancia de ObjetivoNutricional: 'mantener peso', 'perder grasa' o 'ganar masa muscular'."
         )
-
-    proteinas = carbohidratos = grasas = 0.0
 
     # Asignación de macronutrientes según el objetivo
     if objetivo == ObjetivoNutricional.MANTENER_PESO:
@@ -366,7 +355,9 @@ def calcular_macronutrientes(calorias: float, objetivo: ObjetivoNutricional) -> 
         carbohidratos = (calorias * 0.50) / CARB_DIVISOR
         grasas = (calorias * 0.20) / FAT_DIVISOR
 
-    return float(proteinas), float(carbohidratos), float(grasas)
+    # Redondeo de cada macronutriente a dos decimales antes de devolverlos
+    return round(proteinas, 2), round(carbohidratos, 2), round(grasas, 2)
+
 
 
 def calcular_peso_grasa_corporal(peso: float, porcentaje_grasa: float) -> float:
