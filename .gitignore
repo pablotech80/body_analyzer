@@ -53,3 +53,6 @@ Thumbs.db
 .DS_Store
 desktop.ini
 $RECYCLE.BIN/
+
+test_api.py
+setup.py
