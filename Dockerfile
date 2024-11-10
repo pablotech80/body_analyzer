@@ -25,4 +25,4 @@ ENV FLASK_APP=src/body_analyzer/main.py
 EXPOSE 5000
 
 # Ejecuta Gunicorn como el servidor de producción
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "src.body_analyzer.main:app"]
+CMD gunicorn -w 4 -b 0.0.0.0:$PORT src.body_analyzer.main:app
