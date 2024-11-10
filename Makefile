@@ -1,102 +1,65 @@
-# Define the name of your virtual environment
+# Define el nombre de tu entorno virtual
 VENV_NAME = .venv
 
-# Paths to activate virtual environment and Python
+# Rutas de activación de entorno virtual y Python
 VENV_ACTIVATE = $(VENV_NAME)/bin/activate
 PYTHON_PATH = $(shell which python3.13)
 
-# Project name
+# Nombre del proyecto
 PROJECT_NAME = body_analyzer
 
-# Add the virtual environment's bin directory to PATH
+# Añadir el directorio bin del entorno virtual a PATH
 export PATH := /app/.local/bin:$(PATH)
 
-# Create virtual environment
+# Crear entorno virtual
 create-venv: delete-venv
 	$(PYTHON_PATH) -m venv $(VENV_NAME)
 
-# Delete virtual environment
+# Eliminar entorno virtual
 delete-venv:
 	rm -rf $(VENV_NAME)
 
-# Uninstall project
+# Desinstalar proyecto
 uninstall:
 	$(VENV_NAME)/bin/pip uninstall -y $(PROJECT_NAME)
 
-# Build project
+# Construir proyecto
 build: update-pip
 	$(PYTHON_PATH) setup.py sdist bdist_wheel
 
-# Clean project directories
+# Limpiar directorios del proyecto
 clean:
 	rm -rf build dist *.egg-info
 	find . -type d -name "__pycache__" -exec rm -r {} +
 	find . -type f -name "*.pyc" -delete
 
-# Reinstall dependencies
+# Reinstalar dependencias
 reinstall-dependencies: update-pip delete-dependencies install-dep clean
 
-# Update pip
+# Actualizar pip
 update-pip:
 	$(VENV_NAME)/bin/pip install --upgrade pip
 
-# Delete all installed dependencies
+# Eliminar todas las dependencias instaladas
 delete-dependencies:
 	$(VENV_NAME)/bin/pip freeze | xargs $(VENV_NAME)/bin/pip uninstall -y
 
-# Install Docker in the virtual environment
+# Instalar Docker en el entorno virtual
 docker:
 	$(VENV_NAME)/bin/pip install docker
 
-# Install project dependencies
+# Instalar dependencias del proyecto
 install-dep:
 	$(VENV_NAME)/bin/pip install -e .
 
-# Run the Flask application
+# Ejecutar la aplicación Flask (ajustado para Docker)
 run:
-	FLASK_APP=src/body_analyzer/main.py $(VENV_NAME)/bin/python -m flask run
+	@if [ -d "$(VENV_NAME)" ]; then \
+		FLASK_APP=src/body_analyzer/main.py $(VENV_NAME)/bin/python -m flask run --host=0.0.0.0 --port=5000; \
+	else \
+		FLASK_APP=src/body_analyzer/main.py python -m flask run --host=0.0.0.0 --port=5000; \
+	fi
 
-# Run tests
-test: ## Run tests
+# Ejecutar pruebas
+test:
 	$(VENV_NAME)/bin/python -m unittest discover -s tests
-
-# Install coverage
-install-coverage:
-	$(VENV_NAME)/bin/pip install coverage
-
-# Run tests with coverage
-coverage: install-coverage
-	$(VENV_NAME)/bin/coverage run --source=src/body_analyzer -m unittest discover -s tests -p "test_*.py"
-	$(VENV_NAME)/bin/coverage report
-	$(VENV_NAME)/bin/coverage html
-
-
-# Clean coverage files
-clean-coverage:
-	rm -rf .coverage htmlcov
-
-# Install formatting tools (black and isort)
-install-formatting-tools:
-	$(VENV_NAME)/bin/pip install black isort
-
-# Format code using isort and black
-format-code: install-formatting-tools
-	$(VENV_NAME)/bin/isort src/
-	$(VENV_NAME)/bin/black src/
-
-# Combined format command for easy use
-format: format-code
-
-# Install pre-commit and hooks
-install-pre-commit:
-	$(VENV_NAME)/bin/pip install pre-commit
-	pre-commit install
-
-#  pre-commit all files
-run-pre-commit:
-	pre-commit run --all-files
-
-# Format code with Black e isort and pre-commit
-format-and-commit:
-	make format-code
-	make run-pre-commit

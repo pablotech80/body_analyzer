@@ -49,48 +49,6 @@ class TestMainEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn("error", json.loads(response.data))
 
-    def test_informe_completo(self):
-        # Caso exitoso
-        response = self.app.post(
-            "/informe_completo",
-            data=json.dumps(
-                {
-                    "peso": 70,
-                    "altura": 175,
-                    "edad": 30,
-                    "genero": "h",
-                    "cuello": 40,
-                    "cintura": 90,
-                }
-            ),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, 200)
-        try:
-            data = json.loads(response.data)
-            self.assertIn("resultados", data)
-            self.assertIn("interpretaciones", data)
-        except json.JSONDecodeError:
-            self.fail(f"La respuesta no es un JSON válido: {response.data}")
-
-        # Caso con error - género inválido
-        response = self.app.post(
-            "/informe_completo",
-            data=json.dumps(
-                {
-                    "peso": 70,
-                    "altura": 175,
-                    "edad": 30,
-                    "genero": "x",
-                    "cuello": 40,
-                    "cintura": 90,
-                }
-            ),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, 400)
-        self.assertIn("error", json.loads(response.data))
-
     def test_calcular_porcentaje_grasa(self):
         # Caso exitoso para un hombre
         response = self.app.post(

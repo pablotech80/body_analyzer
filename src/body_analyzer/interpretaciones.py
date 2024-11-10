@@ -1,5 +1,5 @@
-from .constantes import *
-from .model import Sexo
+from src.body_analyzer.constantes import *
+from src.body_analyzer.model import Sexo
 
 
 def interpretar_imc(imc: float, ffmi: float, genero: Sexo) -> str:

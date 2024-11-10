@@ -1,12 +1,19 @@
-from flask import jsonify, request
+from flask import json, jsonify, request, Response, Blueprint
 
-from .analisis_completo import informe_completo
+from src.body_analyzer.interpretaciones import *
+
+from src.body_analyzer.model import Sexo
+from .analisis_completo import validar_parametro
+
 from .calculos import *
 from .constantes import *
-from .model import Sexo
+
+
+bp = Blueprint("body_analyzer", __name__)
 
 
 def configure_routes(app):
+    app.register_blueprint(bp)
     print("Configuring routes")
     """
     Configura las rutas de la aplicación Flask.
@@ -14,6 +21,55 @@ def configure_routes(app):
     :param app: Objeto de la aplicación Flask.
     :return: None
     """
+
+    @app.route("/")
+    def index():
+        return "Welcome to the BIO*ANALYZE API!"
+
+    @app.route("/calcular_porcentaje_grasa", methods=["POST"])
+    def calcular_porcentaje_grasa_endpoint():
+        try:
+            data = request.get_json()
+            cintura = data.get("cintura")
+            cuello = data.get("cuello")
+            altura = data.get("altura")
+            genero = data.get("genero")
+            cadera = data.get("cadera")
+
+            # Verificar los parámetros requeridos para hombres y mujeres
+            if None in (cintura, cuello, altura, genero):
+                return jsonify({"error": "Faltan parámetros obligatorios"}), 400
+
+            # Verificar que el género sea válido
+            if genero not in ["h", "m"]:
+                return (
+                    jsonify({"error": "El valor de 'genero' debe ser 'h' o 'm'."}),
+                    400,
+                )
+
+            # Verificar el valor de cadera si el género es mujer
+            if genero == "m" and cadera is None:
+                return (
+                    jsonify(
+                        {"error": "Para mujeres, la cadera debe ser especificada."}
+                    ),
+                    400,
+                )
+
+            # Convertir genero a Enum Sexo
+            genero_enum = Sexo.HOMBRE if genero == "h" else Sexo.MUJER
+
+            # Calcular el porcentaje de grasa
+            porcentaje_grasa = calcular_porcentaje_grasa(
+                cintura, cuello, altura, genero_enum, cadera
+            )
+
+            return jsonify({"porcentaje_grasa": round(porcentaje_grasa, 2)}), 200
+
+        except ValueError as e:
+            return jsonify({"error": str(e)}), 400
+        except Exception as e:
+            return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
 
     @app.route("/calcular_peso_grasa_corporal", methods=["POST"])
     def calcular_peso_grasa_corporal_endpoint():
@@ -633,38 +689,173 @@ def configure_routes(app):
         except Exception as e:
             return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
 
-    @app.route("/informe_completo", methods=["POST"])
-    def informe_completo_endpoint():
+    @app.route("/calorias_diarias", methods=["POST"])
+    def calorias_diarias_endpoint():
         """
-        Genera un informe completo basado en los datos proporcionados.
-
-        Parámetros de la solicitud JSON:
-        - peso: Peso de la persona (obligatorio)
-        - altura: Altura de la persona (obligatorio)
-        - edad: Edad de la persona (obligatorio)
-        - genero: Género de la persona ('h' para hombre, 'm' para mujer) (obligatorio)
-        - cuello: Circunferencia del cuello (obligatorio)
-        - cintura: Circunferencia de la cintura (obligatorio)
-        - cadera: Circunferencia de la cadera (opcional, solo para mujeres)
-
-        :return: Un JSON con el informe completo o un mensaje de error.
+        Endpoint para calcular las calorías diarias basadas en TMB y objetivo nutricional.
         """
         try:
-            # Obtener los datos del cuerpo de la solicitud
             data = request.get_json()
 
-            # Validación de datos recibidos en el request
-            if not data:
-                return jsonify({"error": "No se proporcionaron datos"}), 400
+            # Validación de parámetros necesarios
+            peso = data.get("peso")
+            altura = data.get("altura")
+            edad = data.get("edad")
+            genero = data.get("genero")
+            objetivo = data.get("objetivo")
 
-            # Generar el informe completo utilizando la función informe_completo
-            informe = informe_completo(data)
+            # Validación de valores
+            if None in (peso, altura, edad, genero, objetivo):
+                return jsonify({"error": "Faltan parámetros obligatorios"}), 400
 
-            # Si hay un error en el informe, devolver el error con el estado adecuado
-            if "error" in informe:
-                return jsonify(informe), 400
+            genero_enum = Sexo.HOMBRE if genero == "h" else Sexo.MUJER
+            try:
+                objetivo_enum = ObjetivoNutricional(objetivo)
+            except ValueError:
+                return (
+                    jsonify(
+                        {
+                            "error": "El objetivo debe ser 'mantener peso', 'perder grasa' o 'ganar masa muscular'"
+                        }
+                    ),
+                    400,
+                )
 
-            # Devolver el informe completo
+            # Calcular TMB y luego calorías diarias
+            tmb = calcular_tmb(peso, altura, edad, genero_enum)
+            calorias_diarias = round(calcular_calorias_diarias(tmb, objetivo_enum), 2)
+
+            return jsonify({"calorias_diarias": calorias_diarias}), 200
+
+        except ValueError as e:
+            return jsonify({"error": str(e)}), 400
+        except Exception as e:
+            return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
+
+    @app.route("/macronutrientes", methods=["POST"])
+    def macronutrientes_endpoint():
+        try:
+            data = request.get_json()
+            calorias_diarias = data.get("calorias_diarias")
+            objetivo = data.get("objetivo")
+
+            # Validaciones básicas
+            if calorias_diarias is None or objetivo is None:
+                return jsonify({"error": "Faltan parámetros obligatorios"}), 400
+
+            objetivo_enum = ObjetivoNutricional(objetivo.strip().lower())
+
+            # Cálculo de macronutrientes
+            proteinas, carbohidratos, grasas = calcular_macronutrientes(
+                calorias_diarias, objetivo_enum
+            )
+
+            return (
+                jsonify(
+                    {
+                        "macronutrientes": {
+                            "proteinas": proteinas,
+                            "carbohidratos": carbohidratos,
+                            "grasas": grasas,
+                        }
+                    }
+                ),
+                200,
+            )
+
+        except ValueError as e:
+            return jsonify({"error": str(e)}), 400
+        except Exception as e:
+            return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
+
+    @app.route("/informe_completo", methods=["POST"])
+    def informe_completo_endpoint():
+        try:
+            data = request.get_json()
+            peso = data.get("peso")
+            altura = data.get("altura")
+            edad = data.get("edad")
+            genero = data.get("genero")
+            cuello = data.get("cuello")
+            cintura = data.get("cintura")
+            cadera = data.get("cadera")
+            objetivo = data.get("objetivo")
+
+            # Validaciones
+            if None in (peso, altura, edad, genero, cuello, cintura, objetivo):
+                return jsonify({"error": "Faltan parámetros obligatorios"}), 400
+
+            genero_enum = Sexo.HOMBRE if genero == "h" else Sexo.MUJER
+            objetivo_enum = ObjetivoNutricional(objetivo.strip().lower())
+
+            # Realizar cálculos principales
+            porcentaje_grasa = calcular_porcentaje_grasa(
+                cintura, cuello, altura, genero_enum, cadera
+            )
+            tmb = calcular_tmb(peso, altura, edad, genero_enum)
+            imc = calcular_imc(peso, altura)
+            masa_muscular = peso - (peso * (porcentaje_grasa / 100))
+            agua_total = calcular_agua_total(peso, altura, edad, genero_enum)
+            ffmi = calcular_ffmi(masa_muscular, altura)
+            peso_saludable_min, peso_saludable_max = calcular_peso_saludable(altura)
+            sobrepeso = calcular_sobrepeso(peso, altura)
+            rcc = calcular_rcc(cintura, cadera) if genero_enum == Sexo.MUJER else "N/A"
+            ratio_cintura_altura = calcular_ratio_cintura_altura(cintura, altura)
+
+            # Calorías diarias y macronutrientes
+            calorias_diarias = calcular_calorias_diarias(tmb, objetivo_enum)
+            proteinas, carbohidratos, grasas = calcular_macronutrientes(
+                calorias_diarias, objetivo_enum
+            )
+
+            # Interpretaciones
+            interpretacion_imc = interpretar_imc(imc, ffmi, genero_enum)
+            interpretacion_grasa = interpretar_porcentaje_grasa(
+                porcentaje_grasa, genero_enum
+            )
+            interpretacion_ffmi = interpretar_ffmi(ffmi, genero_enum)
+            interpretacion_rcc = (
+                interpretar_rcc(rcc, genero_enum)
+                if genero_enum == Sexo.MUJER
+                else "N/A"
+            )
+            interpretacion_ratio_cintura_altura = interpretar_ratio_cintura_altura(
+                ratio_cintura_altura
+            )
+
+            # Consolidación del informe
+            resultados = {
+                "tmb": tmb,
+                "imc": imc,
+                "porcentaje_grasa": porcentaje_grasa,
+                "masa_muscular": masa_muscular,
+                "agua_total": agua_total,
+                "ffmi": ffmi,
+                "peso_saludable": {
+                    "min": peso_saludable_min,
+                    "max": peso_saludable_max,
+                },
+                "sobrepeso": sobrepeso,
+                "rcc": rcc,
+                "ratio_cintura_altura": ratio_cintura_altura,
+                "calorias_diarias": calorias_diarias,
+                "macronutrientes": {
+                    "proteinas": proteinas,
+                    "carbohidratos": carbohidratos,
+                    "grasas": grasas,
+                },
+            }
+
+            interpretaciones = {
+                "imc": interpretacion_imc,
+                "porcentaje_grasa": interpretacion_grasa,
+                "ffmi": interpretacion_ffmi,
+                "rcc": interpretacion_rcc,
+                "ratio_cintura_altura": interpretacion_ratio_cintura_altura,
+            }
+
+            informe = {"resultados": resultados, "interpretaciones": interpretaciones}
+
             return jsonify(informe), 200
 
         except ValueError as e:

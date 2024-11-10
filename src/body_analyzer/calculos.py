@@ -30,7 +30,8 @@ def calcular_porcentaje_grasa(
     """
 
     # Validación del género
-    if genero not in [Sexo.HOMBRE, Sexo.MUJER]:
+
+    if not isinstance(genero, Sexo):
         raise ValueError("El valor de 'genero' debe ser Sexo.HOMBRE o Sexo.MUJER.")
 
     # Cálculo para hombres
@@ -80,7 +81,7 @@ def calcular_tmb(peso: float, altura: float, edad: int, genero: Sexo) -> float:
     Returns: float: TMB calculada.
     """
     # Validaciones de entrada
-    if not isinstance(Sexo, genero):
+    if not isinstance(genero, Sexo):
         raise ValueError(
             "El valor de 'genero' debe ser 'h' para 'hombre' o 'm' para 'mujer'."
         )
@@ -88,9 +89,9 @@ def calcular_tmb(peso: float, altura: float, edad: int, genero: Sexo) -> float:
     if peso <= 0 or altura <= 0 or edad <= 0:
         raise ValueError("Peso, altura y edad deben ser valores positivos.")
 
-    if genero == "h":
+    if genero == Sexo.HOMBRE:
         tmb = 88.362 + (13.397 * peso) + (4.799 * altura) - (5.677 * edad)
-    elif genero == "m":
+    elif genero == Sexo.MUJER:
         tmb = 447.593 + (9.247 * peso) + (3.098 * altura) - (4.330 * edad)
     else:
         raise ValueError("El valor de 'genero' debe ser 'h' o 'm'.")
@@ -126,6 +127,11 @@ def calcular_agua_total(peso: float, altura: float, edad: int, genero: Sexo) -> 
     Returns:
         float: Agua total estimada en el cuerpo, en litros.
     """
+    # Validaciones de entrada
+    if not isinstance(genero, Sexo):
+        raise ValueError(
+            "El valor de 'genero' debe ser 'h' para 'hombre' o 'm' para 'mujer'."
+        )
 
     if peso <= 0 or altura <= 0 or edad <= 0:
         raise ValueError("Peso, altura y edad deben ser valores positivos.")
@@ -201,7 +207,7 @@ def calcular_masa_muscular(
         raise ValueError(
             "Peso y porcentaje de grasa corporal deben ser valores positivos."
         )
-    if not 0 <= porcentaje_grasa <= 100:
+    if not (0 <= porcentaje_grasa <= 100):
         raise ValueError("Porcentaje de grasa corporal debe estar entre 0 y 100.")
 
     masa_muscular = peso * ((100 - porcentaje_grasa) / 100)
@@ -292,12 +298,9 @@ def calcular_calorias_diarias(
     """
     Calcula las calorías diarias necesarias basadas en la TMB y el objetivo nutricional.
 
-    Dependiendo del objetivo del usuario, se ajustan las calorías para mantener el peso,
-    perder grasa o ganar masa muscular.
-
     Args:
         tmb (float): Tasa Metabólica Basal calculada.
-        objetivo (ClassVar[ObjetivoNutricional]): Objetivo nutricional
+        objetivo (ObjetivoNutricional): Objetivo nutricional
         ('mantener peso', 'perder grasa' o 'ganar masa muscular').
 
     Returns:
@@ -306,45 +309,37 @@ def calcular_calorias_diarias(
     Raises:
         ValueError: Si el objetivo no es uno de los valores esperados.
     """
-
-    if objetivo not in ["mantener peso", "perder grasa", "ganar masa muscular"]:
+    if not isinstance(objetivo, ObjetivoNutricional):
         raise ValueError(
-            "El valor de 'objetivo' debe ser 'mantener peso', 'perder grasa' o 'ganar masa muscular'."
+            "El objetivo debe ser una instancia de ObjetivoNutricional: 'mantener peso', 'perder grasa' o 'ganar masa muscular'."
         )
+
     if objetivo == ObjetivoNutricional.MANTENER_PESO:
-        return tmb * 1.2  # Factor de actividad moderado
+        calorias = tmb * 1.2
     elif objetivo == ObjetivoNutricional.PERDER_GRASA:
-        return tmb * 1.2 * 0.8  # 20% de reducción calórica
+        calorias = tmb * 1.2 * 0.8  # 20% de reducción calórica
     elif objetivo == ObjetivoNutricional.GANAR_MASA_MUSCULAR:
-        return round(tmb * 1.2 * 1.2, 2)  # 20% de aumento calórico
+        calorias = tmb * 1.2 * 1.2  # 20% de aumento calórico
+
+    return round(calorias, 2)
 
 
 def calcular_macronutrientes(calorias: float, objetivo: ObjetivoNutricional) -> tuple:
     """
     Calcula la distribución de macronutrientes basada en las calorías diarias y el objetivo nutricional.
 
-    Dependiendo del objetivo del usuario (mantener peso, perder grasa o ganar muscular),
-    se ajusta la proporción de macronutrientes
-    para cumplir con el objetivo nutricional.
-
     Args:
         calorias (float): Calorías diarias recomendadas.
-        objetivo (str): Objetivo nutricional ('mantener peso', 'perder grasa', 'ganar masa muscular').
+        objetivo (ObjetivoNutricional): Objetivo nutricional ('mantener peso', 'perder grasa', 'ganar masa muscular').
 
     Returns:
-        tuple: Una tuple con la cantidad de macronutrientes recomendados
-        (gramos de proteínas, gramos de carbohidratos, gramos de grasas).
-
-    Raises:
-        ValueError: Si el objetivo no es uno de los valores esperados
-        ('mantener peso', 'perder grasa', 'ganar masa muscular').
+        tuple: Una tupla con la cantidad de macronutrientes recomendados
+        (gramos de proteínas, gramos de carbohidratos, gramos de grasas), redondeados a dos decimales.
     """
     if not isinstance(objetivo, ObjetivoNutricional):
         raise ValueError(
-            "El valor de 'objetivo' debe ser 'mantener peso', 'perder grasa' o 'ganar muscular'."
+            "El valor de 'objetivo' debe ser una instancia de ObjetivoNutricional: 'mantener peso', 'perder grasa' o 'ganar masa muscular'."
         )
-
-    proteinas = carbohidratos = grasas = 0.0
 
     # Asignación de macronutrientes según el objetivo
     if objetivo == ObjetivoNutricional.MANTENER_PESO:
@@ -360,7 +355,8 @@ def calcular_macronutrientes(calorias: float, objetivo: ObjetivoNutricional) -> 
         carbohidratos = (calorias * 0.50) / CARB_DIVISOR
         grasas = (calorias * 0.20) / FAT_DIVISOR
 
-    return float(proteinas), float(carbohidratos), float(grasas)
+    # Redondeo de cada macronutriente a dos decimales antes de devolverlos
+    return round(proteinas, 2), round(carbohidratos, 2), round(grasas, 2)
 
 
 def calcular_peso_grasa_corporal(peso: float, porcentaje_grasa: float) -> float:
@@ -379,9 +375,9 @@ def calcular_peso_grasa_corporal(peso: float, porcentaje_grasa: float) -> float:
     """
 
     # Validaciones de entrada
-    if not isinstance(peso, float) or peso <= 0:
+    if peso <= 0:
         raise ValueError("El peso debe ser un número positivo.")
-    if not isinstance(porcentaje_grasa, float) or not (0 <= porcentaje_grasa <= 100):
+    if not (0 <= porcentaje_grasa <= 100):
         raise ValueError("El porcentaje de grasa corporal debe estar entre 0 y 100.")
 
     # Cálculo del peso de la grasa corporal

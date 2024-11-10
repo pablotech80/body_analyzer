@@ -7,14 +7,16 @@ class TestEnums(unittest.TestCase):
 
     def test_sexo_values(self):
         # Comprobar que los valores del Enum Sexo son correctos
-        self.assertEqual(Sexo.HOMBRE.value, 'h')
-        self.assertEqual(Sexo.MUJER.value, 'm')
+        self.assertEqual(Sexo.HOMBRE.value, "h")
+        self.assertEqual(Sexo.MUJER.value, "m")
 
     def test_objetivo_nutricional_values(self):
         # Comprobar que los valores del Enum ObjetivoNutricional son correctos
-        self.assertEqual(ObjetivoNutricional.MANTENER_PESO.value, 'mantener peso')
-        self.assertEqual(ObjetivoNutricional.PERDER_GRASA.value, 'perder grasa')
-        self.assertEqual(ObjetivoNutricional.GANAR_MASA_MUSCULAR.value, 'ganar masa muscular')
+        self.assertEqual(ObjetivoNutricional.MANTENER_PESO.value, "mantener peso")
+        self.assertEqual(ObjetivoNutricional.PERDER_GRASA.value, "perder grasa")
+        self.assertEqual(
+            ObjetivoNutricional.GANAR_MASA_MUSCULAR.value, "ganar masa muscular"
+        )
 
     def test_enum_membership_sexo(self):
         # Comprobar que ciertos valores están en el enum Sexo
@@ -30,13 +32,13 @@ class TestEnums(unittest.TestCase):
     def test_invalid_sexo(self):
         # Comprobar que un valor no válido no pertenece al Enum Sexo
         with self.assertRaises(ValueError):
-            Sexo('x')
+            Sexo("x")
 
     def test_invalid_objetivo_nutricional(self):
         # Comprobar que un valor no válido no pertenece al Enum ObjetivoNutricional
         with self.assertRaises(ValueError):
-            ObjetivoNutricional('bajar peso')
+            ObjetivoNutricional("bajar peso")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
