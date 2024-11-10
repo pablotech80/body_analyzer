@@ -11,7 +11,7 @@ data = {
     "cuello": 35,
     "cintura": 75,
     "cadera": 95,
-    "objetivo": "ganar masa muscular",  # Cambiamos según el objetivo que quieras probar
+    "objetivo": "perder grasa",  # Cambiamos según el objetivo que quieras probar
 }
 
 response = rq.post(url, json=data)

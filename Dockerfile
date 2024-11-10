@@ -11,6 +11,7 @@ COPY src/ ./src
 
 # Instala las herramientas de construcción necesarias
 RUN apt-get update && apt-get install -y build-essential
+RUN pip install prometheus_flask_exporter
 
 # Actualiza pip e instala las dependencias
 RUN python -m pip install --upgrade pip && \
