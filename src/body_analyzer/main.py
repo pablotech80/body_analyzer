@@ -1,9 +1,11 @@
-import flask
+from flask import Flask
 
 from src.body_analyzer.constantes import *
+
 from src.body_analyzer.endpoints import configure_routes
 
-app = flask.Flask(__name__)
+app = Flask(__name__)
+
 
 # Llama a la función para configurar las rutas
 configure_routes(app)

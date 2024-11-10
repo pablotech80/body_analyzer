@@ -3,87 +3,95 @@ from .interpretaciones import *
 from .model import Sexo
 
 
+def validar_parametro(nombre, valor, tipos, positivo=True):
+    """
+    Valida que el parámetro `valor` sea de uno de los `tipos` indicados y, si se requiere,
+    que sea positivo.
+    """
+    if not isinstance(valor, tipos) or (positivo and valor <= 0):
+        tipo_str = ", ".join([t.__name__ for t in tipos])
+        raise ValueError(f"'{nombre}' debe ser un {tipo_str} positivo.")
+
+
+def calcular_resultados(peso, altura, edad, genero_enum, cintura, cuello, cadera):
+    """
+    Realiza cálculos principales como TMB, IMC, porcentaje de grasa, etc., y devuelve un diccionario
+    con los resultados.
+    """
+    return {
+        "tmb": calcular_tmb(peso, altura, edad, genero_enum),
+        "imc": calcular_imc(peso, altura),
+        "porcentaje_grasa": calcular_porcentaje_grasa(
+            cintura, cuello, altura, genero_enum, cadera
+        ),
+        "peso_grasa_corporal": calcular_peso_grasa_corporal(
+            peso,
+            calcular_porcentaje_grasa(cintura, cuello, altura, genero_enum, cadera),
+        ),
+        "masa_muscular": peso
+        - calcular_peso_grasa_corporal(
+            peso,
+            calcular_porcentaje_grasa(cintura, cuello, altura, genero_enum, cadera),
+        ),
+        "ffmi": calcular_masa_muscular(
+            peso,
+            calcular_porcentaje_grasa(cintura, cuello, altura, genero_enum, cadera),
+        ),
+        "rcc": calcular_rcc(cintura, cadera) if genero_enum == Sexo.MUJER else "N/A",
+        "ratio_cintura_altura": cintura / altura,
+    }
+
+
+def calcular_interpretaciones(resultados, genero_enum):
+    """
+    Realiza las interpretaciones de los resultados y devuelve un diccionario con las interpretaciones.
+    """
+    return {
+        "ffmi": interpretar_ffmi(resultados["ffmi"], genero_enum),
+        "imc": interpretar_imc(resultados["imc"], resultados["ffmi"], genero_enum),
+        "porcentaje_grasa": interpretar_porcentaje_grasa(
+            resultados["porcentaje_grasa"], genero_enum
+        ),
+        "rcc": (
+            interpretar_rcc(resultados["rcc"], genero_enum)
+            if genero_enum == Sexo.MUJER
+            else "N/A"
+        ),
+        "ratio_cintura_altura": interpretar_ratio_cintura_altura(
+            resultados["ratio_cintura_altura"]
+        ),
+    }
+
+
 def informe_completo(data):
     try:
-        # Extracción de datos
-        peso = data.get("peso")
-        altura = data.get("altura")
-        edad = data.get("edad")
-        genero = data.get("genero")
-        cuello = data.get("cuello")
-        cintura = data.get("cintura")
-        cadera = (
-            data.get("cadera") if genero == "m" else None
-        )  # Solo relevante para mujeres
+        # Extracción y validación de datos simplificando con un bucle
+        campos_obligatorios = ["peso", "altura", "edad", "genero", "cuello", "cintura"]
+        for campo in campos_obligatorios:
+            if data.get(campo) is None:
+                raise ValueError(f"Falta el parámetro obligatorio: {campo}")
+        peso, altura, edad, genero, cuello, cintura = [
+            data.get(c) for c in campos_obligatorios
+        ]
+        cadera = data.get("cadera") if genero == "m" else None
 
-        # Validación de parámetros obligatorios
-        if None in (peso, altura, edad, genero, cuello, cintura):
-            raise ValueError("Faltan parámetros obligatorios.")
-
-        # Validación de tipos de datos
-        if not isinstance(peso, (int, float)) or peso <= 0:
-            raise ValueError("El peso debe ser un número positivo.")
-        if not isinstance(altura, (int, float)) or altura <= 0:
-            raise ValueError("La altura debe ser un número positivo.")
-        if not isinstance(edad, int) or edad <= 0:
-            raise ValueError("La edad debe ser un número entero positivo.")
-        if not isinstance(cuello, (int, float)) or cuello <= 0:
-            raise ValueError("El valor de 'cuello' debe ser un número positivo.")
-        if not isinstance(cintura, (int, float)) or cintura <= 0:
-            raise ValueError("El valor de 'cintura' debe ser un número positivo.")
-        if genero not in ["h", "m"]:
-            raise ValueError(f"El valor de 'genero' debe ser 'h' o 'm': {genero}")
-        if genero == "m" and (
-            cadera is None or not isinstance(cadera, (int, float)) or cadera <= 0
-        ):
-            raise ValueError(
-                "El valor de 'cadera' debe ser un número positivo para mujeres."
-            )
-
-        # Convertir genero a Enum Sexo
+        # Validación de valores y tipos
+        validar_parametro("peso", peso, (int, float))
+        validar_parametro("altura", altura, (int, float))
+        validar_parametro("edad", edad, (int,))
+        validar_parametro("cuello", cuello, (int, float))
+        validar_parametro("cintura", cintura, (int, float))
+        if genero == "m":
+            validar_parametro("cadera", cadera, (int, float))
         genero_enum = Sexo.HOMBRE if genero == "h" else Sexo.MUJER
 
-        # Realización de cálculos
-        resultados = {
-            "tmb": calcular_tmb(peso, altura, edad, genero_enum),
-            "imc": calcular_imc(peso, altura),
-            "porcentaje_grasa": calcular_porcentaje_grasa(
-                cintura, cuello, altura, genero_enum, cadera
-            ),
-        }
-
-        resultados["peso_grasa_corporal"] = calcular_peso_grasa_corporal(
-            peso, resultados["porcentaje_grasa"]
+        # Realización de cálculos e interpretaciones
+        resultados = calcular_resultados(
+            peso, altura, edad, genero_enum, cintura, cuello, cadera
         )
+        interpretaciones = calcular_interpretaciones(resultados, genero_enum)
 
-        resultados["masa_muscular"] = peso - resultados["peso_grasa_corporal"]
-        resultados["ffmi"] = calcular_masa_muscular(
-            peso, resultados["porcentaje_grasa"]
-        )
-        resultados["rcc"] = calcular_rcc(cintura, cadera) if genero == "m" else "N/A"
-        resultados["ratio_cintura_altura"] = cintura / altura
-
-        # Interpretaciones
-        interpretaciones = {
-            "ffmi": interpretar_ffmi(resultados["ffmi"], genero_enum),
-            "imc": interpretar_imc(resultados["imc"], resultados["ffmi"], genero_enum),
-            "porcentaje_grasa": interpretar_porcentaje_grasa(
-                resultados["porcentaje_grasa"], genero_enum
-            ),
-            "rcc": (
-                interpretar_rcc(resultados["rcc"], genero_enum)
-                if genero == "m"
-                else "N/A"
-            ),
-            "ratio_cintura_altura": interpretar_ratio_cintura_altura(
-                resultados["ratio_cintura_altura"]
-            ),
-        }
-
-        # Consolidar resultados e interpretaciones en un informe
-        informe = {"resultados": resultados, "interpretaciones": interpretaciones}
-
-        return informe
+        return {"resultados": resultados, "interpretaciones": interpretaciones}
 
     except ValueError as e:
         return {"error": str(e)}

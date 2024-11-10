@@ -1,4 +1,4 @@
-from flask import jsonify, request
+from flask import json, jsonify, request, Response
 
 from src.body_analyzer.interpretaciones import (
     interpretar_ffmi,
@@ -7,6 +7,7 @@ from src.body_analyzer.interpretaciones import (
     interpretar_ratio_cintura_altura,
     interpretar_rcc,
 )
+
 from src.body_analyzer.model import Sexo
 
 from .calculos import *
@@ -21,6 +22,10 @@ def configure_routes(app):
     :param app: Objeto de la aplicación Flask.
     :return: None
     """
+
+    @app.route("/")
+    def index():
+        return "Welcome to the BIO*ANALYZE API!"
 
     @app.route("/calcular_porcentaje_grasa", methods=["POST"])
     def calcular_porcentaje_grasa_endpoint():
@@ -685,7 +690,7 @@ def configure_routes(app):
         except Exception as e:
             return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
 
-    @app.route("/informe_completo", methods=["POST"])
+    @app.route("/informe_completo", methods = ["POST"])
     def informe_completo_endpoint():
         """
         Interpreta y devuelve un informe con todos los resultados del análisis de composición corporal.
@@ -712,23 +717,15 @@ def configure_routes(app):
             if not isinstance(altura, (int, float)) or altura <= 0:
                 return jsonify({"error": "La altura debe ser un número positivo"}), 400
             if not isinstance(edad, int) or edad <= 0:
-                return (
-                    jsonify({"error": "La edad debe ser un número entero positivo"}),
-                    400,
-                )
+                return jsonify({"error": "La edad debe ser un número entero positivo"}), 400
             if genero not in ["h", "m"]:
-                return (
-                    jsonify({"error": "El valor de 'genero' debe ser 'h' o 'm'"}),
-                    400,
-                )
+                return jsonify({"error": "El valor de 'genero' debe ser 'h' o 'm'"}), 400
 
             # Convertir genero a Enum Sexo
             genero_enum = Sexo.HOMBRE if genero == "h" else Sexo.MUJER
 
             # Realizar cálculos
-            porcentaje_grasa = calcular_porcentaje_grasa(
-                cintura, cuello, altura, genero_enum, cadera
-            )
+            porcentaje_grasa = calcular_porcentaje_grasa(cintura, cuello, altura, genero_enum, cadera)
             tmb = calcular_tmb(peso, altura, edad, genero_enum)
             imc = calcular_imc(peso, altura)
             masa_muscular = peso - (peso * (porcentaje_grasa / 100))
@@ -741,18 +738,10 @@ def configure_routes(app):
 
             # Realizar interpretaciones
             interpretacion_imc = interpretar_imc(imc, ffmi, genero_enum)
-            interpretacion_grasa = interpretar_porcentaje_grasa(
-                porcentaje_grasa, genero_enum
-            )
+            interpretacion_grasa = interpretar_porcentaje_grasa(porcentaje_grasa, genero_enum)
             interpretacion_ffmi = interpretar_ffmi(ffmi, genero_enum)
-            interpretacion_rcc = (
-                interpretar_rcc(rcc, genero_enum)
-                if genero_enum == Sexo.MUJER
-                else "N/A"
-            )
-            interpretacion_ratio_cintura_altura = interpretar_ratio_cintura_altura(
-                ratio_cintura_altura
-            )
+            interpretacion_rcc = interpretar_rcc(rcc, genero_enum) if genero_enum == Sexo.MUJER else "N/A"
+            interpretacion_ratio_cintura_altura = interpretar_ratio_cintura_altura(ratio_cintura_altura)
 
             # Consolidar el informe completo en resultado e interpretaciones, en un diccionario
             resultados = {
@@ -765,11 +754,11 @@ def configure_routes(app):
                 "peso_saludable": {
                     "min": peso_saludable_min,
                     "max": peso_saludable_max,
-                },
+                    },
                 "sobrepeso": sobrepeso,
                 "rcc": rcc,
                 "ratio_cintura_altura": ratio_cintura_altura,
-            }
+                }
 
             interpretaciones = {
                 "imc": interpretacion_imc,
@@ -777,11 +766,13 @@ def configure_routes(app):
                 "ffmi": interpretacion_ffmi,
                 "rcc": interpretacion_rcc,
                 "ratio_cintura_altura": interpretacion_ratio_cintura_altura,
-            }
+                }
 
             informe = {"resultados": resultados, "interpretaciones": interpretaciones}
 
-            return jsonify(informe), 200
+            # Convertir el informe a JSON con caracteres especiales sin codificación Unicode
+            informe_json = json.dumps(informe, ensure_ascii = False)
+            return Response(informe_json, content_type = "application/json; charset=utf-8"), 200
 
         except ValueError as e:
             return jsonify({"error": str(e)}), 400

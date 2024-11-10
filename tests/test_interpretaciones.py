@@ -7,15 +7,24 @@ class TestFuncionesSalud(unittest.TestCase):
 
     def test_interpretar_imc_hombre_alto_musculo(self):
         resultado = interpretar_imc(26.0, 20.0, Sexo.HOMBRE)
-        self.assertEqual(resultado, "El IMC es alto, pero puede estar influenciado por una alta masa muscular.")
+        self.assertEqual(
+            resultado,
+            "El IMC es alto, pero puede estar influenciado por una alta masa muscular.",
+        )
 
     def test_interpretar_imc_mujer_alto_musculo(self):
         resultado = interpretar_imc(26.0, 17.0, Sexo.MUJER)
-        self.assertEqual(resultado, "El IMC es alto, pero puede estar influenciado por una alta masa muscular.")
+        self.assertEqual(
+            resultado,
+            "El IMC es alto, pero puede estar influenciado por una alta masa muscular.",
+        )
 
     def test_interpretar_imc_bajo(self):
         resultado = interpretar_imc(17.0, 15.0, Sexo.HOMBRE)
-        self.assertEqual(resultado, "El IMC es bajo, se recomienda consultar con un profesional de salud.")
+        self.assertEqual(
+            resultado,
+            "El IMC es bajo, se recomienda consultar con un profesional de salud.",
+        )
 
     def test_interpretar_imc_normal(self):
         resultado = interpretar_imc(22.0, 15.0, Sexo.HOMBRE)
@@ -35,7 +44,10 @@ class TestFuncionesSalud(unittest.TestCase):
 
     def test_interpretar_ffmi_hombre_fuerte(self):
         resultado = interpretar_ffmi(FFMI_UMBRAL_HOMBRES[4], Sexo.HOMBRE)
-        self.assertEqual(resultado, "Muy fuerte (Excelente forma física). Cerca del máximo potencial.")
+        self.assertEqual(
+            resultado,
+            "Muy fuerte (Excelente forma física). Cerca del máximo potencial.",
+        )
 
     def test_interpretar_ffmi_mujer_cercano_normal(self):
         resultado = interpretar_ffmi(FFMI_UMBRAL_MUJERES[0] + 1, Sexo.MUJER)
@@ -62,5 +74,5 @@ class TestFuncionesSalud(unittest.TestCase):
             interpretar_ratio_cintura_altura(0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

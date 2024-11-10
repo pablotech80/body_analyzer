@@ -30,6 +30,7 @@ def calcular_porcentaje_grasa(
     """
 
     # Validación del género
+
     if not isinstance(genero, Sexo):
         raise ValueError("El valor de 'genero' debe ser Sexo.HOMBRE o Sexo.MUJER.")
 
