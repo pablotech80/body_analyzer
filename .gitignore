@@ -1,35 +1,58 @@
-# Entorno virtual
-.venv/
-*.egg-info/
+# Ignorar configuraciones y entornos de Python
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+*.env
+.venv/
+env/
+venv/
+ENV/
 
-dist/
-build/
-*.egg
-*.whl
+# Ignorar archivos de configuración y entorno
+*.env
+*.DS_Store
 
-.idea/
+# Ignorar configuraciones de IDEs y editores de texto
 .vscode/
+.idea/
+*.sublime-workspace
 
-# Archivos temporales
-*.tmp
+# Ignorar archivos y carpetas de Docker y despliegue que no son necesarios
+docker-compose.override.yml
 *.log
 
-# Archivos de configuración de Python
-*.py[cod]
-*.pdb
-
-# Archivos de caché
-.cache/
+# Ignorar resultados de pruebas y cobertura
+coverage/
+.tox/
+.nox/
+.pytest_cache/
 *.cover
-nosetests.xml
-coverage.xml
+.hypothesis/
+htmlcov/
+test-results/
 
-# Archivos de test
-tests/.pytest_cache/
+# Ignorar archivos de configuración de CI/CD, si son específicos y no necesarios para todos los usuarios
+.github/
+.gitlab-ci.yml
 
-# Archivos macOS
-.DS_Store/
-/.coverage
+# Ignorar archivos de compilación
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Ignorar archivos de caché de pip y wheel
+*.whl
+*.egg
+pip-wheel-metadata/
+__pycache__/
+
+# Ignorar archivos de configuración específicos del sistema operativo
+Thumbs.db
+.DS_Store
+desktop.ini
+$RECYCLE.BIN/
+
+setup.py
+test_api.py
