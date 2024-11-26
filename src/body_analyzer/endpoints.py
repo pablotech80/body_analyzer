@@ -2,6 +2,7 @@ from flask import json, jsonify, request, Response, Blueprint
 
 from src.body_analyzer.interpretaciones import *
 
+
 from src.body_analyzer.model import Sexo
 from .analisis_completo import validar_parametro
 
