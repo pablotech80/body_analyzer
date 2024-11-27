@@ -56,3 +56,8 @@ $RECYCLE.BIN/
 
 setup.py
 test_api.py
+
+# Ignorar archivos con extensiones de configuración
+*.yml
+*.yaml
+*.toml
