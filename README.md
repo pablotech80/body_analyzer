@@ -10,7 +10,7 @@
 
 ---
 
-## **Índice**
+## **Index**
 1. [Description](#description)
 2. [Main Features](#main-features)
 3. [Requirements](#requirements)
