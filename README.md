@@ -6,94 +6,94 @@
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
 [![License](https://img.shields.io/badge/license-MIT-yellow)]()  
 [![Deployed on Heroku](https://img.shields.io/badge/Heroku-Live-purple)](https://your-heroku-app.herokuapp.com)  
-> **API para análisis biométrico diseñada para profesionales de la salud, nutricionistas y entrenadores personales.**
+> **Biometric analysis API designed for healthcare professionals, nutritionists and personal trainers.**
 
 ---
 
 ## **Índice**
-1. [Descripción](#descripción)
-2. [Características principales](#características-principales)
-3. [Requisitos](#requisitos)
-4. [Instalación y uso](#instalación-y-uso)
-5. [Pruebas locales](#pruebas-locales)
-6. [Endpoints disponibles](#endpoints-disponibles)
-7. [Diagrama de flujo (Mermaid)](#diagrama-de-flujo-mermaid)
-8. [Producción](#producción)
-9. [Notas finales](#notas-finales)
-10. [Contribuciones](#contribuciones)
+1. [Description](#description)
+2. [Main Features](#main-features)
+3. [Requirements](#requirements)
+4. [Installation and use](#installation-and-use)
+5. [Local tests](#local-tests)
+6. [Available endpoints](#available-endpoints)
+7. [Flowchart](#flowchart)
+8. [Production](#production)
+9. [Endnotes](#endnotes)
+10. [Contributions](#contributions)
+11. [License](#license)
 
 
 ---
 
-## **Descripción**
+## **Description**
 
-La API **Body Analyzer** permite realizar cálculos biométricos avanzados y recomendaciones nutricionales iniciales a partir de datos básicos del usuario. Está diseñada como una herramienta backend que puede integrarse con un formulario web o una aplicación para capturar los datos de entrada.
+The **Bio Analyzer** API allows for advanced biometric calculations and initial nutritional recommendations from basic user data. 
 
-Es ideal para:
-- **Entrenadores personales**: Configuración inicial de planes de entrenamiento y objetivos.
-- **Nutricionistas**: Recomendaciones dietéticas personalizadas.
-- **Profesionales de la salud**: Evaluaciones rápidas y precisas.
+It is designed as a **BACKEND** tool that can be integrated with a web form or app to capture input data.
 
-Puedes probar la versión **beta** en producción aquí:
-🌐 [**Body Analyzer API en Heroku**](https://bioanalyze-f0d59edaef22.herokuapp.com)
+It is ideal for:
+- **Personal trainers**: Initial setup of training plans and goals.
+- **Nutritionists**: Personalized dietary recommendations.
+- **Health professionals**: Fast and accurate assessments.
 
----
-
-## **Características principales**
-
-1. **Cálculos avanzados:**
-   - **IMC**: Detecta si el IMC alto se debe a masa muscular o exceso de grasa.
-   - **Porcentaje de grasa corporal**: Estimaciones basadas en fórmulas probadas.
-   - **TMB y calorías diarias**: Ajustadas según el objetivo.
-
-2. **Objetivos personalizables:**
-   - Perder grasa.
-   - Mantener peso.
-   - Ganar masa muscular.
-
-3. **Recomendaciones de macronutrientes**: Proporciones de proteínas, carbohidratos y grasas según el objetivo.
-
-4. **Fácil integración**: Diseñada para ser integrada en una web o aplicación.
+You can try the **beta** version in production here: 🌐 [**Body Analyzer API en Heroku**](https://bioanalyze-f0d59edaef22.herokuapp.com)
 
 ---
 
-## **Requisitos**
+## **Main Features**
+
+1. **Advanced calculations:**
+
+- **BMI**: Detects if high BMI is due to muscle mass or excess fat.
+- **Body fat percentage**: Estimates based on proven formulas.
+- **BMR and daily calories**: Adjusted according to the goal.
+
+2. **Customizable goals:**
+- Lose fat.
+- Maintain weight.
+- Gain muscle mass.
+
+3. **Macronutrient recommendations**: Protein, carbohydrate and fat ratios according to the goal.
+
+4. **Easy integration**: Designed to be integrated into a website or application.
+---
+
+## **Requirements**
 
 - **Python 3.13+**
-- Librerías necesarias (instaladas automáticamente desde el archivo `pyproject.toml`).
-
+- Required libraries (installed automatically from `pyproject.toml` file).
 ---
 
-## **Instalación y uso**
+## **Installation and use**
 
-### **1. Clona el repositorio**
+### **1. Clone the repository**
 ```bash
-git clone https://github.com/tu_usuario/body_analyzer.git
+git clone https://github.com/your_user/body_analyzer.git
 cd body_analyzer
 ```
-### **2. Instala las dependencias**
+### **2. Install the dependencies**
 ```bash
 pip install .
 ```
-O, si prefieres usar el Makefile:
+Or, if you prefer to use the Makefile:
 ```bash
 make install
 ```
-### **3. Ejecuta la API localmente**
+### **3. Run the API locally**
 ```bash
 python src/body_analyzer/main.py
 ```
-La API estará disponible en http://127.0.0.1:5000
+The API will be available at http://127.0.0.1:5000
 
 ---
 
-## **Pruebas locales**
+## **Local tests**
 
-Puedes probar la API localmente con Postman, cURL o cualquier herramienta que soporte solicitudes HTTP. 
-Aquí tienes un ejemplo para el endpoint principal:
+You can test the API locally with Postman, cURL, or any tool that supports HTTP requests.
+Here is an example for the main endpoint:
 
-Ejemplo de solicitud con cURL
-
+Example of request with cURL
 ```bash
 curl -X POST http://127.0.0.1:5000/informe_completo \
 -H "Content-Type: application/json" \
@@ -109,7 +109,7 @@ curl -X POST http://127.0.0.1:5000/informe_completo \
 }'
 ```
 
-### Respuesta esperada
+### Expected response
 
 ```bash
 {
@@ -145,22 +145,21 @@ curl -X POST http://127.0.0.1:5000/informe_completo \
 ```
 
 ---
-## **Endpoints disponibles**
+## **Available Endpoints**
 
-_Método / Ruta / Descripción_
+_Method / Path / Description_
 
-* GET	/	Verifica que el servidor esté corriendo.
+* GET / Verifies that the server is running.
 
-
-* POST	/informe_completo / Genera un informe completo biométrico.
-* POST	/calcular_imc / Calcula el índice de masa corporal (IMC).
-* POST	/calcular_peso_grasa_corporal / Calcula la grasa corporal en kilogramos.
-* POST	/calorias_diarias	/ Calcula las calorías diarias recomendadas.
-* POST	/macronutrientes	/ Calcula el reparto de macronutrientes.
-* Y más en el archivo endpoints.py
+* POST /full_report / Generates a full biometric report.
+* POST /calculate_bmi / Calculates the body mass index (BMI).
+* POST /calculate_weight_body_fat / Calculates body fat in kilograms.
+* POST /daily_calories / Calculates the recommended daily calories.
+* POST /macronutrients / Calculates the macronutrient distribution.
+* And more in the endpoints.py file
 ---
 
-## **Diagrama de flujo**
+## **Flowchart**
 
 
 [![](https://mermaid.ink/img/pako:eNptkUtOwzAQhq9ied1eIAskRCsEElBRYIG8GewhsYg90dhGgqYHYsGKI-RiOE7UglSv5h9_895JTQZlJWuGrhEPK-VFfo8hAVsSy-VZv_bvwzcIA5GCuN7e3fbifHM1cdkozBO01sxMLyal7fDjJ-yPo-AXxIw6Ui82TBoDOIs-0gT_cxX8Ej0yCMaQ2ggmt_FiyQ1fka0e690fPqYMRz0PEBnrMV6TQz82Qh6D6JAD-dzaJxjIaeahT7e8ZiYupbqEIULRysuFdMgOrMk73I2hSsYGHSpZZdMAvymp_D5zkCJtP7yWVeSEC8mU6kZWr9CGrFKXl4crC_kQ7uDtwD8THTUaG4lvppOVy-1_AZSnoCA?type=png)](https://mermaid.live/edit#pako:eNptkUtOwzAQhq9ied1eIAskRCsEElBRYIG8GewhsYg90dhGgqYHYsGKI-RiOE7UglSv5h9_895JTQZlJWuGrhEPK-VFfo8hAVsSy-VZv_bvwzcIA5GCuN7e3fbifHM1cdkozBO01sxMLyal7fDjJ-yPo-AXxIw6Ui82TBoDOIs-0gT_cxX8Ej0yCMaQ2ggmt_FiyQ1fka0e690fPqYMRz0PEBnrMV6TQz82Qh6D6JAD-dzaJxjIaeahT7e8ZiYupbqEIULRysuFdMgOrMk73I2hSsYGHSpZZdMAvymp_D5zkCJtP7yWVeSEC8mU6kZWr9CGrFKXl4crC_kQ7uDtwD8THTUaG4lvppOVy-1_AZSnoCA)
@@ -168,40 +167,90 @@ _Método / Ruta / Descripción_
 
 ---
 
-## **Producción**
+## **Production**
 
-La API está desplegada en Heroku en su versión beta: 🌐 Body Analyzer API en Heroku
+The API is deployed on Heroku in beta: 🌐 Body Analyzer API on Heroku
 https://bioanalyze-f0d59edaef22.herokuapp.com
 
-Pruebas en producción
-Puedes usar las mismas rutas y datos mencionados en las secciones anteriores, pero reemplaza http://127.0.0.1:5000 con la URL de Heroku.
+Testing in production
+You can use the same routes and data mentioned in the previous sections, 
+but replace http://127.0.0.1:5000 with the Heroku URL.
+---
+
+## **Endnotes**
+
+Future Releases:
+* Authentication implementation.
+* Database integration.
+* Creation of a frontend to facilitate the use of the API.
+---
+
+## **Contributions**
+
+This project is open for contributions! If you'd like to contribute:
+
+1. Fork the repository.
+2. Create a new branch for your changes:
+```bash
+git checkout -b feature/new-feature
+```
+3. Commit your changes and make descriptive commits:
+```bash
+git commit -m "Added new feature to calculate ..."
+```
+4. Submit a pull request explaining your changes.
+
+Please make sure to follow coding best practices and, if possible, add unit tests for any new features.
+---
+
+## **License**
+
+Copyright © 2024 Pablo Techera Sosa. All rights reserved.
 
 ---
 
-## **Notas finales**
+### 1. Permissions
 
-Versiones futuras:
-* Implementación de autenticación.
-* Integración con bases de datos.
-* Creación de un frontend para facilitar el uso de la API.
+Permission is granted to anyone to contribute, modify, and/or improve this project under the following conditions:
+
+1. **Personal and Educational Use**:
+- You may use this project for educational or learning purposes without any restrictions.
+
+2. **Modifications and Collaborations**:
+- You may modify the code and collaborate on the development by submitting pull requests to the official repository.
+- Contributions will be reviewed and approved by the project's authors or maintainers.
+
+3. **Redistribution and Derivative Uses**:
+- If you decide to redistribute a modified version of the project, you must include this same license along with the original author's copyright.
+- Commercial use of the project or its modifications is not permitted without the explicit written permission of the author.
+
+---
+
+### 2. Restrictions
+
+1. **Copyright**:
+- This project remains the intellectual property of Pablo Techera Sosa.
+- All accepted contributions to the official repository are considered licensed for use within the original project under the terms of this license.
+
+2. **Commercial Use**:
+- Commercial use of the project, whether in its original or modified form, is prohibited without express written permission.
+
+3. **Limitation of Liability**:
+- This software is provided "as is", without warranty of any kind, express or implied. 
+- In no event shall the authors be liable for damages or problems arising from the use of the project.
 
 ---
 
-## **Contribuciones**
+### 3. How to Contribute
 
-¡Este proyecto está abierto a contribuciones! Si deseas colaborar:
+If you wish to contribute to this project:
 
-1. Haz un fork del repositorio.
-2. Crea una nueva rama para tus cambios:
-   ```bash
-   git checkout -b feature/nueva-funcionalidad
-    ```
-3. Realiza tus modificaciones y realiza commits descriptivos:
-    ```bash
-   git commit -m "Añadida nueva funcionalidad para calcular ..."
-    ```
-4. Envía un pull request explicando tus cambios.
-
-Por favor, asegúrate de seguir las mejores prácticas de código y, si es posible, agrega pruebas unitarias para cualquier nueva funcionalidad.
+1. Fork the repository.
+2. Create a new branch for your modifications.
+3. Send a pull request clearly describing the changes made.
 
 ---
+
+### 4. Final Note
+
+By contributing to this project, you agree that your contributions may be used and distributed under the terms of this license.
