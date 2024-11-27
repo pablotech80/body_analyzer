@@ -35,7 +35,7 @@ Es ideal para:
 - **Profesionales de la salud**: Evaluaciones rápidas y precisas.
 
 Puedes probar la versión **beta** en producción aquí:
-🌐 [**Body Analyzer API en Heroku**](https://your-heroku-app.herokuapp.com)
+🌐 [**Body Analyzer API en Heroku**](https://bioanalyze-f0d59edaef22.herokuapp.com)
 
 ---
 
