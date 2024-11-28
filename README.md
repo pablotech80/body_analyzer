@@ -1,4 +1,4 @@
-# **Bio Analyzer API** 🚀
+# **Bio Analyze API** 🚀
 
 <img src="./logo.JPG" alt="Logo" width="250" />
 
