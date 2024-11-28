@@ -28,7 +28,7 @@
 
 ## **Description**
 
-The **Bio Analyzer** API allows for advanced biometric calculations and initial nutritional recommendations from basic user data. 
+The **Bio Analyze** API allows for advanced biometric calculations and initial nutritional recommendations from basic user data. 
 
 It is designed as a **BACKEND** tool that can be integrated with a web form or app to capture input data.
 
